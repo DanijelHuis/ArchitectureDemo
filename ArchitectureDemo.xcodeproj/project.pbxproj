@@ -108,7 +108,7 @@
 		0CC5E3792BE29CE80065A5F1 /* ArchitectureDemo */ = {
 			isa = PBXGroup;
 			children = (
-				0CC5E3A62BE29D6B0065A5F1 /* ThirdParty */,
+				0CC5E3A62BE29D6B0065A5F1 /* Infrastructure */,
 				0CC5E3A72BE29D750065A5F1 /* Data */,
 				0CC5E3A82BE29D7C0065A5F1 /* Domain */,
 				0CC5E3A92BE29D820065A5F1 /* Presentation */,
@@ -150,13 +150,13 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
-		0CC5E3A62BE29D6B0065A5F1 /* ThirdParty */ = {
+		0CC5E3A62BE29D6B0065A5F1 /* Infrastructure */ = {
 			isa = PBXGroup;
 			children = (
 				0CC5E3AB2BE29DE00065A5F1 /* URLSessionNetworking */,
 				0CC5E3AA2BE29DB30065A5F1 /* Uniflow */,
 			);
-			path = ThirdParty;
+			path = Infrastructure;
 			sourceTree = "<group>";
 		};
 		0CC5E3A72BE29D750065A5F1 /* Data */ = {

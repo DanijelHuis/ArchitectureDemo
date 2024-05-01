@@ -8,6 +8,7 @@
 import Foundation
 import Domain
 import Uniflow
+import Utility
 
 public class PokemonDetailsViewModel: Reducer {
     private let pokemonID: String
