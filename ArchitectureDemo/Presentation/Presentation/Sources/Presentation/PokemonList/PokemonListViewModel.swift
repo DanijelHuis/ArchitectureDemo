@@ -10,10 +10,10 @@ import Domain
 import Uniflow
 
 public final class PokemonListViewModel: Reducer {
-    private let getPokemonsUseCase: GetPokemonsUseCaseProtocol
-    private let coordinator: AppCoordinatorProtocol
+    private let getPokemonsUseCase: GetPokemonsUseCase
+    private let coordinator: Coordinator
     
-    public init(getPokemonsUseCase: GetPokemonsUseCaseProtocol, coordinator: AppCoordinatorProtocol) {
+    public init(getPokemonsUseCase: GetPokemonsUseCase, coordinator: Coordinator) {
         self.getPokemonsUseCase = getPokemonsUseCase
         self.coordinator = coordinator
     }

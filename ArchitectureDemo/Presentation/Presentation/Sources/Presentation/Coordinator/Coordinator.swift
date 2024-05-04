@@ -1,5 +1,5 @@
 //
-//  AppCoordinatorProtocol.swift
+//  Coordinator.swift
 //
 //
 //  Created by Danijel Huis on 01.05.2024..
@@ -19,8 +19,8 @@ public enum PokemonsRoute {
     case details(id: String)
 }
 
-// MARK: - AppCoordinatorProtocol -
+// MARK: - Coordinator -
 
-@MainActor public protocol AppCoordinatorProtocol {
+@MainActor public protocol Coordinator {
     func openRoute(_ route: AppRoute)
 }

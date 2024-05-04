@@ -1,5 +1,5 @@
 //
-//  PokemonRepository.swift
+//  DefaultPokemonRepository.swift
 //  
 //
 //  Created by Danijel Huis on 01.05.2024..
@@ -9,7 +9,7 @@ import Foundation
 import Domain
 
 /// No datasources, everything is done in repository. If needed mapping can be injected.
-final public class PokemonRepository: PokemonRepositoryProtocol {
+final public class DefaultPokemonRepository: PokemonRepository {
     private let httpClient: HTTPClient
     
     public init(httpClient: HTTPClient) {

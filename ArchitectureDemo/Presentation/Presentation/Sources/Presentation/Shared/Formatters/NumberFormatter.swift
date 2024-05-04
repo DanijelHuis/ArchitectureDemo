@@ -7,11 +7,11 @@
 
 import Foundation
 
-public protocol NumberFormatterProtocol {
+public protocol NumberFormatter {
     func string(from integer: Int) -> String
 }
 
-public struct PokemonOrderFormatter: NumberFormatterProtocol {
+public struct PokemonOrderFormatter: NumberFormatter {
     public init() {}
     
     /// Adds # prefix and formats integer with minimum length of 3.

@@ -7,11 +7,11 @@
 
 import Foundation
 
-public protocol WeightFormatterProtocol {
+public protocol WeightFormatter {
     func string(from weight: Int) -> String
 }
 
-public struct PokemonWeightFormatter: WeightFormatterProtocol {
+public struct PokemonWeightFormatter: WeightFormatter {
     private let formatter: MeasurementFormatter
     
     public init(locale: Locale = .autoupdatingCurrent) {

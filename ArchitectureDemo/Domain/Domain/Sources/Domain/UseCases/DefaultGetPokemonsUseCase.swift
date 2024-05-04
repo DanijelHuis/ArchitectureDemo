@@ -6,19 +6,19 @@
 //
 import Foundation
 
-public protocol GetPokemonsUseCaseProtocol {
+public protocol GetPokemonsUseCase {
     func getPokemonsNextPage() async throws -> [Pokemon]
     func removeAllPages()
     var hasNextPage: Bool { get }
 }
 
 /// Fetches pokemons. It keeps track of current page and stores items for previously fetched pages.
-public final class GetPokemonsUseCase: GetPokemonsUseCaseProtocol {
-    private let pokemonRepository: PokemonRepositoryProtocol
+public final class DefaultGetPokemonsUseCase: GetPokemonsUseCase {
+    private let pokemonRepository: PokemonRepository
     private let paginationManager: PaginationManager
     private var items = [Pokemon]()
     
-    public init(pokemonRepository: PokemonRepositoryProtocol, pageSize: Int) {
+    public init(pokemonRepository: PokemonRepository, pageSize: Int) {
         self.pokemonRepository = pokemonRepository
         // No reason to inject this because it has no side effects. We can inject if we want to explicitly mock.
         self.paginationManager = PaginationManager(pageSize: pageSize)

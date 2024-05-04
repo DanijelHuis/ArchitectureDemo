@@ -25,21 +25,21 @@ public struct PokemonDetailsView: View {
             Color(self.background).edgesIgnoringSafeArea(.all)
             
             switch viewModel.state {
-                // Idle
+            // Idle
             case .idle:
                 EmptyView()
                 
-                // Loading
+            // Loading
             case .loading(let text):
                 LoadingView(text: text)
                 
-                // Error
+            // Error
             case .error:
                 TryAgainView {
                     viewModel.send(.getPokemonDetails)
                 }
                 
-                // Loaded
+            // Loaded
             case .loaded(let state):
                 VStack(spacing: .spacing.double) {
                     // Avatar

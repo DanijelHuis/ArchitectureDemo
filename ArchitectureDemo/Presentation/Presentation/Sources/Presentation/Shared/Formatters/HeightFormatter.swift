@@ -7,11 +7,11 @@
 
 import Foundation
 
-public protocol HeightFormatterProtocol {
+public protocol HeightFormatter {
     func string(from height: Int) -> String
 }
 
-public struct PokemonHeightFormatter: HeightFormatterProtocol {
+public struct PokemonHeightFormatter: HeightFormatter {
     private let formatter: MeasurementFormatter
     
     public init(locale: Locale = .autoupdatingCurrent) {

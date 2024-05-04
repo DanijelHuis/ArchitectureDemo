@@ -7,14 +7,14 @@
 
 import Foundation
 
-public protocol GetPokemonDetailsUseCaseProtocol {
+public protocol GetPokemonDetailsUseCase {
     func getPokemonDetails(id: String) async throws -> PokemonDetails
 }
 
-public final class GetPokemonDetailsUseCase: GetPokemonDetailsUseCaseProtocol {
-    private let pokemonRepository: PokemonRepositoryProtocol
+public final class DefaultGetPokemonDetailsUseCase: GetPokemonDetailsUseCase {
+    private let pokemonRepository: PokemonRepository
     
-    public init(pokemonRepository: PokemonRepositoryProtocol) {
+    public init(pokemonRepository: PokemonRepository) {
         self.pokemonRepository = pokemonRepository
     }
     

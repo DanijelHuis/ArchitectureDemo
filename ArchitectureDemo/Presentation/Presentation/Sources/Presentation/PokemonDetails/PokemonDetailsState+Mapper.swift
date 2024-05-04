@@ -8,19 +8,19 @@
 import Foundation
 import Domain
 
-public protocol PokemonDetailsStateMapperProtocol {
+public protocol PokemonDetailsStateMapper {
     func map(pokemonDetails: PokemonDetails) -> PokemonDetailsViewModel.PokemonDetailsState
 }
 
 /// Maps PokemonDetails object to view state.
-public struct PokemonDetailsStateMapper: PokemonDetailsStateMapperProtocol {
-    private let heightFormatter: HeightFormatterProtocol
-    private let weightFormatter: WeightFormatterProtocol
-    private let orderFormatter: NumberFormatterProtocol
+public struct DefaultPokemonDetailsStateMapper: PokemonDetailsStateMapper {
+    private let heightFormatter: HeightFormatter
+    private let weightFormatter: WeightFormatter
+    private let orderFormatter: NumberFormatter
     
-    public init(heightFormatter: HeightFormatterProtocol = PokemonHeightFormatter(),
-                weightFormatter: WeightFormatterProtocol = PokemonWeightFormatter(),
-                orderFormatter: NumberFormatterProtocol = PokemonOrderFormatter()) {
+    public init(heightFormatter: HeightFormatter = PokemonHeightFormatter(),
+                weightFormatter: WeightFormatter = PokemonWeightFormatter(),
+                orderFormatter: NumberFormatter = PokemonOrderFormatter()) {
         self.heightFormatter = heightFormatter
         self.weightFormatter = weightFormatter
         self.orderFormatter = orderFormatter

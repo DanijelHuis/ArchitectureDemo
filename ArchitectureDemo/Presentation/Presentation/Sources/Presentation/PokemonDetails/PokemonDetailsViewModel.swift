@@ -8,17 +8,16 @@
 import Foundation
 import Domain
 import Uniflow
-import Utility
 
 public class PokemonDetailsViewModel: Reducer {
     private let pokemonID: String
-    private let getPokemonDetailsUseCase: GetPokemonDetailsUseCaseProtocol
-    private let stateMapper: PokemonDetailsStateMapperProtocol
-    private let coordinator: AppCoordinatorProtocol
+    private let getPokemonDetailsUseCase: GetPokemonDetailsUseCase
+    private let stateMapper: PokemonDetailsStateMapper
+    private let coordinator: Coordinator
     
-    public init(pokemonID: String, getPokemonDetailsUseCase: GetPokemonDetailsUseCaseProtocol,
-                stateMapper: PokemonDetailsStateMapperProtocol = PokemonDetailsStateMapper(),
-                coordinator: AppCoordinatorProtocol) {
+    public init(pokemonID: String, getPokemonDetailsUseCase: GetPokemonDetailsUseCase,
+                stateMapper: PokemonDetailsStateMapper = DefaultPokemonDetailsStateMapper(),
+                coordinator: Coordinator) {
         self.pokemonID = pokemonID
         self.getPokemonDetailsUseCase = getPokemonDetailsUseCase
         self.stateMapper = stateMapper

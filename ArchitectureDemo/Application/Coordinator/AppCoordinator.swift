@@ -10,7 +10,7 @@ import Presentation
 import SwiftUI
 
 /// Every view is supposed to create its own instance of AppCoordinator, that way if something needs to be persisted in child coordinator, its lifecycle will be tied to the view.
-@MainActor struct AppCoordinator: AppCoordinatorProtocol {
+@MainActor struct AppCoordinator: Coordinator {
     let navigator: Navigator
     let pokemonsCoordinator = PokemonsCoordinator()
     

@@ -30,7 +30,7 @@ public enum StandardError: Error {
     case noData
 }
 
-// MARK: - Convenience implementations -
+// MARK: - Convenience -
 
 public final class DefaultHTTPClient: HTTPClient {
     private let requestBuilder: RequestBuilder

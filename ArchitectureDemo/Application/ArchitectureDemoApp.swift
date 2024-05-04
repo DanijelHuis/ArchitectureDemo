@@ -10,7 +10,6 @@ import Presentation
 
 @main
 struct ArchitectureDemoApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     private let navigator = Navigator()
     private let pokemonsList: any View
     
