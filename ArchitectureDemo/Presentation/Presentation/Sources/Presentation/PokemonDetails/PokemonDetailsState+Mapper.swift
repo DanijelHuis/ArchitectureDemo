@@ -27,7 +27,7 @@ public struct DefaultPokemonDetailsStateMapper: PokemonDetailsStateMapper {
     }
     
     public func map(pokemonDetails: PokemonDetails) -> PokemonDetailsViewModel.PokemonDetailsState {
-        let typesString = pokemonDetails.types.map({ $0.type }).joined(separator: ", ")
+        let typesString = pokemonDetails.types.joined(separator: ", ")
         
         return .init(name: pokemonDetails.name.capitalized,
                      imageURL: pokemonDetails.imageURL,

@@ -18,14 +18,7 @@ struct RemotePokemonDetails: Decodable, Equatable {
     var sprites: Sprites
     
     struct Sprites: Decodable, Equatable {
-        var backDefault: URL?
-        var backFemale: URL?
-        var backShiny: URL?
-        var backShiny_female: URL?
         var frontDefault: URL?
-        var frontFemale: URL?
-        var frontShiny: URL?
-        var frontShinyFemale: URL?
         var other: Other?
         
         struct Other: Decodable, Equatable {
@@ -33,9 +26,6 @@ struct RemotePokemonDetails: Decodable, Equatable {
             
             struct Home: Decodable, Equatable {
                 var frontDefault: URL?
-                var frontFemale: URL?
-                var frontShiny: URL?
-                var frontShinyFemale: URL?
             }
         }
     }

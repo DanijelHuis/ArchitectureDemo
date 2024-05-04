@@ -61,7 +61,7 @@ private extension RemoteNamedAPIResource {
 
 private extension RemotePokemonDetails {
     func mapped() -> PokemonDetails {
-        let imageURL = [sprites.other?.home?.frontDefault, sprites.frontDefault, sprites.frontFemale, sprites.frontShiny, sprites.frontShinyFemale]
+        let imageURL = [sprites.other?.home?.frontDefault, sprites.frontDefault]
             .compactMap({ $0 })
             .first
         
@@ -71,7 +71,7 @@ private extension RemotePokemonDetails {
             weight: weight,
             height: height,
             order: order,
-            types: types.map({ PokemonDetails.SlotType(slot: $0.slot, type: $0.type.name) }),
+            types: types.map({ $0.type.name }),
             imageURL: imageURL
         )
     }

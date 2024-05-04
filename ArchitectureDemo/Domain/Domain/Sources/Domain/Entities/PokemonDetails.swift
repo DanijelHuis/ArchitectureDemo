@@ -13,10 +13,10 @@ public struct PokemonDetails: Decodable, Equatable {
     public var weight: Int
     public var height: Int
     public var order: Int
-    public var types: [SlotType]
+    public var types: [String]
     public var imageURL: URL?
     
-    public init(id: Int, name: String, weight: Int, height: Int, order: Int, types: [SlotType], imageURL: URL?) {
+    public init(id: Int, name: String, weight: Int, height: Int, order: Int, types: [String], imageURL: URL?) {
         self.id = id
         self.name = name
         self.weight = weight
@@ -24,16 +24,5 @@ public struct PokemonDetails: Decodable, Equatable {
         self.order = order
         self.types = types
         self.imageURL = imageURL
-    }
-    
-    
-    public struct SlotType: Decodable, Equatable {
-        public var slot: Int
-        public var type: String
-        
-        public init(slot: Int, type: String) {
-            self.slot = slot
-            self.type = type
-        }
     }
 }
