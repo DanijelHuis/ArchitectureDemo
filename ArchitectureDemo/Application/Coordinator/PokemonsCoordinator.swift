@@ -18,7 +18,7 @@ import Uniflow
         case .list:
             let viewModel = Store(
                 state: PokemonListViewModel.State.idle,
-                reducer: PokemonListViewModel(getPokemonsUseCase: Container.getPokemonsUseCase,
+                reducer: PokemonListViewModel(getPokemonListUseCase: Container.getPokemonListUseCase,
                                               coordinator: AppCoordinator(navigator: navigator))
             )
             return PokemonListView(viewModel: viewModel)

@@ -1,5 +1,5 @@
 //
-//  DefaultGetPokemonsUseCaseTests.swift
+//  DefaultGetPokemonListUseCaseTests.swift
 //
 //
 //  Created by Danijel Huis on 04.05.2024..
@@ -8,9 +8,9 @@
 import XCTest
 @testable import Domain
 
-final class DefaultGetPokemonsUseCaseTests: XCTestCase {
+final class DefaultGetPokemonListUseCaseTests: XCTestCase {
     private var pokemonListRepository: MockPokemonListRepository!
-    private var sut: DefaultGetPokemonsUseCase!
+    private var sut: DefaultGetPokemonListUseCase!
     private var pageSize = 3
     
     private struct Mock {

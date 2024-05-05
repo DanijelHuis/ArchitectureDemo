@@ -10,11 +10,11 @@ import Foundation
 // MARK: - Routes -
 
 /// AppRoute contains all routes in the app. For scalability we separate it into sub-routes.
-public enum AppRoute {
+public enum AppRoute: Equatable {
     case pokemons(_ route: PokemonsRoute)
 }
 
-public enum PokemonsRoute {
+public enum PokemonsRoute: Equatable {
     case list
     case details(id: String)
 }

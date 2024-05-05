@@ -10,11 +10,11 @@ import Domain
 import Uniflow
 
 public final class PokemonListViewModel: Reducer {
-    private let getPokemonsUseCase: GetPokemonsUseCase
+    private let getPokemonListUseCase: GetPokemonListUseCase
     private let coordinator: Coordinator
     
-    public init(getPokemonsUseCase: GetPokemonsUseCase, coordinator: Coordinator) {
-        self.getPokemonsUseCase = getPokemonsUseCase
+    public init(getPokemonListUseCase: GetPokemonListUseCase, coordinator: Coordinator) {
+        self.getPokemonListUseCase = getPokemonListUseCase
         self.coordinator = coordinator
     }
     
@@ -24,10 +24,10 @@ public final class PokemonListViewModel: Reducer {
             // If it is in loaded state then we don't need to show loading because load more is shown.
             if !state.isLoaded { state = .loading() }
             return .run { send in
-                // Fetch next page
                 do {
-                    let pokemons = try await self.getPokemonsUseCase.getPokemonsNextPage()
-                    await send(.internalAction(.didGetPokemons(pokemons: pokemons, hasMoreItems: self.getPokemonsUseCase.hasNextPage)))
+                    // Fetch next page
+                    let pokemons = try await self.getPokemonListUseCase.getPokemonsNextPage()
+                    await send(.internalAction(.didGetPokemons(pokemons: pokemons, hasMoreItems: self.getPokemonListUseCase.hasNextPage)))
                 } catch {
                     await send(.internalAction(.errorOccurred))
                 }
@@ -55,7 +55,7 @@ public final class PokemonListViewModel: Reducer {
 // MARK: - State & Action -
 
 extension PokemonListViewModel {
-    public enum State {
+    public enum State: Equatable {
         case idle
         case loading(text: String = "common_loading_wait".localized)
         case loaded(items: [PokemonListItemView.State], hasMoreItems: Bool)

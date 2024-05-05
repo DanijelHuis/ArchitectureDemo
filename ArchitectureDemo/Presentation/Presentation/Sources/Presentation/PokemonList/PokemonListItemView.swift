@@ -48,7 +48,7 @@ public struct PokemonListItemView: View {
 // MARK: - State -
 
 extension PokemonListItemView {
-    public struct State {
+    public struct State: Equatable {
         var id: String
         var name: String
     }

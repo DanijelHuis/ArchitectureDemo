@@ -1,5 +1,5 @@
 //
-//  PokemonMocks.swift
+//  RemotePokemonMocks.swift
 //
 //
 //  Created by Danijel Huis on 04.05.2024..

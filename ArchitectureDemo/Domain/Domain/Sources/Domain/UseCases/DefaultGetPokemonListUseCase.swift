@@ -1,19 +1,19 @@
 //
-//  GetPokemonsUseCase.swift
+//  GetPokemonListUseCase.swift
 //  
 //
 //  Created by Danijel Huis on 01.05.2024..
 //
 import Foundation
 
-public protocol GetPokemonsUseCase {
+public protocol GetPokemonListUseCase {
     func getPokemonsNextPage() async throws -> [Pokemon]
     func removeAllPages()
     var hasNextPage: Bool { get }
 }
 
 /// Fetches pokemons. It keeps track of current page and stores items for previously fetched pages.
-public final class DefaultGetPokemonsUseCase: GetPokemonsUseCase {
+public final class DefaultGetPokemonListUseCase: GetPokemonListUseCase {
     private let pokemonListRepository: PokemonListRepository
     private let paginationManager: PaginationManager
     private var items = [Pokemon]()
