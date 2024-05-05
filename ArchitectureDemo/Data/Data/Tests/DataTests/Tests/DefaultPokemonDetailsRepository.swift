@@ -1,5 +1,5 @@
 //
-//  DefaultPokemonRepositoryTests.swift
+//  DefaultPokemonDetailsRepositoryTests.swift
 //
 //
 //  Created by Danijel Huis on 04.05.2024..
@@ -8,9 +8,9 @@
 import XCTest
 @testable import Data
 
-final class DefaultPokemonRepositoryTests: XCTestCase {
+final class DefaultPokemonDetailsRepositoryTests: XCTestCase {
     private var httpClient: MockHTTPClient!
-    private var sut: DefaultPokemonRepository!
+    private var sut: DefaultPokemonDetailsRepository!
     
     private struct Mock {
         static let pokemonsResponse = RemoteNamedAPIResourceList(count: 2, results: [.init(name: "pokemon1"), .init(name: "pokemon2")])
@@ -28,54 +28,11 @@ final class DefaultPokemonRepositoryTests: XCTestCase {
         sut = nil
     }
     
-    // MARK: - getPokemonsPage -
-
-    func test_getPokemonsPage_thenSetsRequestCorrectly() async throws {
-        // Given
-        httpClient.setup(buildRequest: true, authorizeRequest: true, response: Mock.pokemonsResponse)
-        
-        // When
-        _ = try await sut.getPokemonsPage(offset: 5, limit: 10)
-        
-        // Then
-        XCTAssertEqual(httpClient.buildRequestCalls.count, 1)
-        XCTAssertEqual(httpClient.buildRequestCalls.first?.path, "pokemon")
-        XCTAssertEqual(httpClient.buildRequestCalls.first?.method, .get)
-        XCTAssertEqual(httpClient.buildRequestCalls.first?.headers, nil)
-        XCTAssertEqual(httpClient.buildRequestCalls.first?.body, nil)
-        XCTAssertEqual(httpClient.buildRequestCalls.first?.query, ["offset": "5","limit": "10"])
-    }
-    
-    func test_getPokemonsPage_givenResponse_thenMapsCorrectly() async throws {
-        // Given
-        httpClient.setup(buildRequest: true, authorizeRequest: true, response: Mock.pokemonsResponse)
-        // When
-        let page = try await sut.getPokemonsPage(offset: 5, limit: 10)
-        // Then: maps remote to domain object correctly
-        XCTAssertEqual(page.count, 2)
-        XCTAssertEqual(page.results.first, .init(id: "pokemon1", name: "Pokemon1"))
-        XCTAssertEqual(page.results.last, .init(id: "pokemon2", name: "Pokemon2"))
-    }
-    
-    func test_getPokemonsPage_runStandardTests() async throws {
-        // Given
-        httpClient.setup(buildRequest: true, authorizeRequest: true, response: Mock.pokemonsResponse)
-        // Then
-        await httpClient.runStandardTests(testCase: self, checkAuthorization: true) {
-            // When
-            _ = try await sut.getPokemonsPage(offset: 5, limit: 10)
-        }
-    }
-    
-    // MARK: - getPokemonsPage -
-    
     func test_getPokemonDetails_thenSetsRequestCorrectly() async throws {
         // Given
         httpClient.setup(buildRequest: true, authorizeRequest: true, response: Mock.pokemonDetailsResponse)
-        
         // When
         _ = try await sut.getPokemonDetails(id: "505")
-        
         // Then
         XCTAssertEqual(httpClient.buildRequestCalls.count, 1)
         XCTAssertEqual(httpClient.buildRequestCalls.first?.path, "pokemon/505")
@@ -117,7 +74,7 @@ final class DefaultPokemonRepositoryTests: XCTestCase {
         XCTAssertEqual(pokemonDetails.imageURL?.absoluteString, "Pokemon1_frontDefault")
     }
     
-    func test_getPokemonDetails_givenNoSprites_thenMapsFrontDefault() async throws {
+    func test_getPokemonDetails_givenNoSprites_thenMapsNil() async throws {
         // Given
         let response = RemotePokemonDetails.mock(id: 1, sprites: .mock(frontDefault: nil,
                                                                        homeFrontDefault: nil))
@@ -133,7 +90,6 @@ final class DefaultPokemonRepositoryTests: XCTestCase {
     func test_getPokemonDetails_runStandardTests() async throws {
         // Given
         httpClient.setup(buildRequest: true, authorizeRequest: true, response: Mock.pokemonDetailsResponse)
-
         // Then
         await httpClient.runStandardTests(testCase: self, checkAuthorization: true) {
             // When

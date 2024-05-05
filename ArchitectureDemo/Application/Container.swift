@@ -12,10 +12,10 @@ import Data
 /// Poor man's dependency injection.
 struct Container {
     static var getPokemonsUseCase: DefaultGetPokemonsUseCase {
-        DefaultGetPokemonsUseCase(pokemonRepository: DefaultPokemonRepository(httpClient: API.Poke.client), pageSize: 50)
+        DefaultGetPokemonsUseCase(pokemonListRepository: DefaultPokemonListRepository(httpClient: API.Poke.client), pageSize: 50)
     }
     
     static var getPokemonDetailsUseCase: DefaultGetPokemonDetailsUseCase {
-        DefaultGetPokemonDetailsUseCase(pokemonRepository: DefaultPokemonRepository(httpClient: API.Poke.client))
+        DefaultGetPokemonDetailsUseCase(pokemonDetailsRepository: DefaultPokemonDetailsRepository(httpClient: API.Poke.client))
     }
 }

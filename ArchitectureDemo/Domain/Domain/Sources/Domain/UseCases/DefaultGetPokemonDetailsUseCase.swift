@@ -12,13 +12,13 @@ public protocol GetPokemonDetailsUseCase {
 }
 
 public final class DefaultGetPokemonDetailsUseCase: GetPokemonDetailsUseCase {
-    private let pokemonRepository: PokemonRepository
+    private let pokemonDetailsRepository: PokemonDetailsRepository
     
-    public init(pokemonRepository: PokemonRepository) {
-        self.pokemonRepository = pokemonRepository
+    public init(pokemonDetailsRepository: PokemonDetailsRepository) {
+        self.pokemonDetailsRepository = pokemonDetailsRepository
     }
     
     public func getPokemonDetails(id: String) async throws -> PokemonDetails {
-        try await pokemonRepository.getPokemonDetails(id: id)
+        try await pokemonDetailsRepository.getPokemonDetails(id: id)
     }
 }

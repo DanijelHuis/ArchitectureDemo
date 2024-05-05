@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  PokemonMocks.swift
+//
 //
 //  Created by Danijel Huis on 04.05.2024..
 //

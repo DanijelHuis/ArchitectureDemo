@@ -7,7 +7,6 @@
 
 import Foundation
 
-public protocol PokemonRepository {
+public protocol PokemonListRepository {
     func getPokemonsPage(offset: Int, limit: Int) async throws -> PokemonsPage
-    func getPokemonDetails(id: String) async throws -> PokemonDetails
 }

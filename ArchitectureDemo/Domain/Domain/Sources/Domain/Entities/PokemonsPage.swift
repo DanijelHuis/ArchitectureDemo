@@ -8,11 +8,11 @@
 import Foundation
 
 public struct PokemonsPage: Codable {
-    public var count: Int
+    public var totalCount: Int
     public var results: [Pokemon]
     
     public init(count: Int, results: [Pokemon]) {
-        self.count = count
+        self.totalCount = count
         self.results = results
     }
 }

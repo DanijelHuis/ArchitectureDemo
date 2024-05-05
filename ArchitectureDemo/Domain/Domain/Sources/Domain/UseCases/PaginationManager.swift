@@ -41,21 +41,21 @@ class PaginationManager {
     
     /// Adds page and sets total item count (from backend).
     func addPage(_ page: Page, totalItemCount: Int) {
+        if page.offset == 0 { removeAllPages() }
         self.totalItemCount = totalItemCount
-        if page.offset == 0 { pages.removeAll() }
         pages.append(page)
     }
     
     func removeAllPages() {
         pages.removeAll()
-        totalItemCount = 0
+        totalItemCount = nil
     }
 }
 
 // MARK: - Entities -
 
 /// Describes page but doesn't hold data.
-public struct Page {
+public struct Page: Equatable {
     let offset: Int
     let limit: Int
 }

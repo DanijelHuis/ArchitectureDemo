@@ -14,12 +14,12 @@ public protocol GetPokemonsUseCase {
 
 /// Fetches pokemons. It keeps track of current page and stores items for previously fetched pages.
 public final class DefaultGetPokemonsUseCase: GetPokemonsUseCase {
-    private let pokemonRepository: PokemonRepository
+    private let pokemonListRepository: PokemonListRepository
     private let paginationManager: PaginationManager
     private var items = [Pokemon]()
     
-    public init(pokemonRepository: PokemonRepository, pageSize: Int) {
-        self.pokemonRepository = pokemonRepository
+    public init(pokemonListRepository: PokemonListRepository, pageSize: Int) {
+        self.pokemonListRepository = pokemonListRepository
         // No reason to inject this because it has no side effects. We can inject if we want to explicitly mock.
         self.paginationManager = PaginationManager(pageSize: pageSize)
     }
@@ -32,8 +32,8 @@ public final class DefaultGetPokemonsUseCase: GetPokemonsUseCase {
     }
     
     private func getPage(_ page: Page) async throws -> [Pokemon] {
-        let response = try await pokemonRepository.getPokemonsPage(offset: page.offset, limit: page.limit)
-        paginationManager.addPage(page, totalItemCount: response.count)
+        let response = try await pokemonListRepository.getPokemonsPage(offset: page.offset, limit: page.limit)
+        paginationManager.addPage(page, totalItemCount: response.totalCount)
         items.append(contentsOf: response.results)
         return items
     }
