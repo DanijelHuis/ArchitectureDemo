@@ -12,16 +12,13 @@ import Uniflow
 public class PokemonDetailsViewModel: Reducer {
     private let pokemonID: String
     private let getPokemonDetailsUseCase: GetPokemonDetailsUseCase
-    private let stateMapper: PokemonDetailsStateMapper
-    private let coordinator: Coordinator
+    private let stateMapper: LoadedStateMapper
     
     public init(pokemonID: String, getPokemonDetailsUseCase: GetPokemonDetailsUseCase,
-                stateMapper: PokemonDetailsStateMapper = DefaultPokemonDetailsStateMapper(),
-                coordinator: Coordinator) {
+                stateMapper: LoadedStateMapper = DefaultLoadedStateMapper()) {
         self.pokemonID = pokemonID
         self.getPokemonDetailsUseCase = getPokemonDetailsUseCase
         self.stateMapper = stateMapper
-        self.coordinator = coordinator
     }
     
     public func reduce(action: Action, into state: inout State) -> Effect<Action, InternalAction, Output> {
@@ -54,14 +51,14 @@ public class PokemonDetailsViewModel: Reducer {
 // MARK: - State & Action -
 
 extension PokemonDetailsViewModel {
-    public enum State {
+    public enum State: Equatable {
         case idle
         case loading(text: String = "common_loading_wait".localized)
         case error
-        case loaded(pokemonDetails: PokemonDetailsState)
+        case loaded(pokemonDetails: LoadedState)
     }
     
-    public struct PokemonDetailsState {
+    public struct LoadedState: Equatable {
         var name: String
         var imageURL: URL?
         var height: String

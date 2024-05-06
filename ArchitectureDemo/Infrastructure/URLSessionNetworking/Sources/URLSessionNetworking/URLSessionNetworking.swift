@@ -8,8 +8,9 @@ import Foundation
 
 // MARK: - JSON request builder -
 
+/// Builds URLRequest from given inputs. It adds JSON headers automatically.
 public final class URLSessionJSONRequestBuilder {
-    // @TODO can we make this non-optional
+    // @TODO can we make this non-optional?
     private let baseURL: URL?
     
     public init(baseURL: URL?) {
@@ -44,6 +45,7 @@ public final class URLSessionJSONRequestBuilder {
 
 // MARK: - Service -
 
+/// Performs given request, decodes raw data and returns decoded object.
 public final class URLSessionRequestService {
     private let session: URLSession
     
@@ -51,7 +53,7 @@ public final class URLSessionRequestService {
         self.session = session
     }
     
-    public func performRequest<T: Decodable>(_ request: URLRequest, decodedTo: T.Type, decoder: JSONDecoder = JSONDecoder()) async throws -> T {
+    public func performRequest<T: Decodable>(_ request: URLRequest, decodedTo: T.Type, decoder: JSONDecoder) async throws -> T {
         let response = try await session.data(for: request)
         return try decoder.decode(T.self, from: response.0)
     }

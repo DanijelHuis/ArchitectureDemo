@@ -27,8 +27,7 @@ import Uniflow
             let viewModel = Store(
                 state: PokemonDetailsViewModel.State.idle,
                 reducer: PokemonDetailsViewModel(pokemonID: id,
-                                                 getPokemonDetailsUseCase: Container.getPokemonDetailsUseCase,
-                                                 coordinator: AppCoordinator(navigator: navigator))
+                                                 getPokemonDetailsUseCase: Container.getPokemonDetailsUseCase)
             )
             return PokemonDetailsView(viewModel: viewModel)
         }

@@ -55,6 +55,17 @@
           }
         }
       }
+    },
+    "test_key" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Test value"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		0C141E662BE2A520005E074C /* URLSessionNetworkingAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C141E652BE2A520005E074C /* URLSessionNetworkingAdapter.swift */; };
 		0C6BF3AA2BE6716600CDA6FD /* TestUtility in Frameworks */ = {isa = PBXBuildFile; productRef = 0C6BF3A92BE6716600CDA6FD /* TestUtility */; };
-		0CA0AB8D2BE657CC00A098E0 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0CA0AB8C2BE657CC00A098E0 /* Localizable.xcstrings */; };
 		0CC5E37F2BE29CE90065A5F1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0CC5E37E2BE29CE90065A5F1 /* Assets.xcassets */; };
 		0CC5E3822BE29CE90065A5F1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0CC5E3812BE29CE90065A5F1 /* Preview Assets.xcassets */; };
 		0CC5E38C2BE29CE90065A5F1 /* ArchitectureDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC5E38B2BE29CE90065A5F1 /* ArchitectureDemoTests.swift */; };
@@ -37,8 +36,9 @@
 
 /* Begin PBXFileReference section */
 		0C141E652BE2A520005E074C /* URLSessionNetworkingAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionNetworkingAdapter.swift; sourceTree = "<group>"; };
+		0C4F304D2BE8209E00A98D4B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0C6BF3A82BE6712400CDA6FD /* TestUtility */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TestUtility; sourceTree = "<group>"; };
-		0CA0AB8C2BE657CC00A098E0 /* Localizable.xcstrings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		0C85D73C2BE90E5100E5306D /* AllUnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = AllUnitTests.xctestplan; path = Resources/AllUnitTests.xctestplan; sourceTree = "<group>"; };
 		0CC5E3772BE29CE80065A5F1 /* ArchitectureDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArchitectureDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CC5E37E2BE29CE90065A5F1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0CC5E3812BE29CE90065A5F1 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -91,6 +91,7 @@
 		0CC5E36E2BE29CE80065A5F1 = {
 			isa = PBXGroup;
 			children = (
+				0C85D73C2BE90E5100E5306D /* AllUnitTests.xctestplan */,
 				0CC5E3792BE29CE80065A5F1 /* ArchitectureDemo */,
 				0CC5E3A42BE29D390065A5F1 /* Resources */,
 				0CC5E38A2BE29CE90065A5F1 /* ArchitectureDemoTests */,
@@ -131,6 +132,7 @@
 		0CC5E38A2BE29CE90065A5F1 /* ArchitectureDemoTests */ = {
 			isa = PBXGroup;
 			children = (
+				0C4F304D2BE8209E00A98D4B /* Info.plist */,
 				0CC5E38B2BE29CE90065A5F1 /* ArchitectureDemoTests.swift */,
 			);
 			path = ArchitectureDemoTests;
@@ -139,7 +141,6 @@
 		0CC5E3A42BE29D390065A5F1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				0CA0AB8C2BE657CC00A098E0 /* Localizable.xcstrings */,
 				0CC5E3A52BE29D480065A5F1 /* Assets */,
 			);
 			path = Resources;
@@ -308,7 +309,6 @@
 			files = (
 				0CC5E3822BE29CE90065A5F1 /* Preview Assets.xcassets in Resources */,
 				0CC5E37F2BE29CE90065A5F1 /* Assets.xcassets in Resources */,
-				0CA0AB8D2BE657CC00A098E0 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -543,6 +543,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4CHP7B6QMP;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ArchitectureDemoTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.danijelhuis.ArchitectureDemoTests;
@@ -563,6 +564,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4CHP7B6QMP;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ArchitectureDemoTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.danijelhuis.ArchitectureDemoTests;

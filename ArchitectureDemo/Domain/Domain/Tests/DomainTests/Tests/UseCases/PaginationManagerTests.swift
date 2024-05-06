@@ -61,13 +61,13 @@ final class PaginationManagerTests: XCTestCase {
         XCTAssertEqual(sut.totalItemCount, 20)
     }
     
-    func test_addPage_givenPagesAddedBefore_thenRemovesExistingPages() {
+    func test_addPage_givenZeroOffset_givenPagesAddedBefore_thenRemovesExistingPages() {
         // Given
         sut.addPage(.init(offset: 0, limit: pageSize), totalItemCount: 50)
         sut.addPage(.init(offset: 10, limit: pageSize), totalItemCount: 50)
         sut.addPage(.init(offset: 30, limit: pageSize), totalItemCount: 50)
 
-        // When: added page with offset 0 when pages exist
+        // When: added page with offset 0 when pages exist should remove all existing pages
         sut.addPage(.init(offset: 0, limit: 10), totalItemCount: 20)
 
         // Then: nextPage is second page, which means it did reset previous pages

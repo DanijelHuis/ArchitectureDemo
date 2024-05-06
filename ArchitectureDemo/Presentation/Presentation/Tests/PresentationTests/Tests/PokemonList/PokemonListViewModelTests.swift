@@ -57,9 +57,7 @@ final class PokemonListViewModelTests: XCTestCase {
         getPokemonListUseCase.hasNextPage = false
         // When
         await store.sendAndWait(.loadNextPage)
-        print(NSLocalizedString("common_loading_wait", comment: ""))
-        print("common_loading_wait".localized)
-
+        
         // Then: sets loading and then loaded
         XCTAssertEqual(stateCalls, [.loading(text: "common_loading_wait".localizedOrRandom),
                                     .loaded(items: Mock.listItems, hasMoreItems: false)])
@@ -72,7 +70,7 @@ final class PokemonListViewModelTests: XCTestCase {
         // When
         await store.sendAndWait(.loadNextPage)
         // Then: sets loading and then error
-        XCTAssertEqual(stateCalls, [.loading(text: "common_loading_wait".localized),
+        XCTAssertEqual(stateCalls, [.loading(text: "common_loading_wait".localizedOrRandom),
                                     .error])
     }
     

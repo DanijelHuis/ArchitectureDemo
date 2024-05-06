@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Store+Test.swift
 //  
 //
 //  Created by Danijel Huis on 05.05.2024..
@@ -15,4 +15,3 @@ extension Store {
         await task.value
     }
 }
-

@@ -13,10 +13,10 @@ extension Store {
     
     /// EffectManager runs effects from the store.
     ///
-    /// The most important part why this is separated is because we want the lifecycle of async operations to be independent to lifecycle of a store. If we were to run
+    /// This is separated mostly because we want the lifecycle of async operations to be independent to lifecycle of the store. If we were to run
     /// async operations in the store then store couldn't deallocate until all async effects are done (see example below). Separating this we can cancel all effects in Store's deinit.
     ///
-    /// Example of this problem below, TestViewModel will not be able to dealloc until fetchMovies ends, weak self doesn't matter here.
+    /// Example of deinit problem below, TestViewModel will not be able to dealloc until fetchMovies ends, weak self doesn't matter here.
     ///     ```
     ///     class TestViewModel {
     ///         init() {
@@ -51,7 +51,7 @@ extension Store {
             // Output
             if let output = effect.output {
                 outputSubject.send(output)
-                // Async operation
+            // Async operation
             } else if let operation = effect.operation {
                 await operation { actionAndInternalAction in
                     guard !Task.isCancelled else { return }

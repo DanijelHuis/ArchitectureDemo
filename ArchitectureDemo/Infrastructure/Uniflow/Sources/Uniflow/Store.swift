@@ -15,8 +15,8 @@ import Combine
 /// Cancellation: You don't have to use [weak self] in reduce functions when returning operation because Store is independent from reducer and will be deallocated no matter if reducer keeps self.
 /// When store is deallocated it will explicitly cancel all effects.
 ///
-/// - Parameter State:              State that holds all data that your feature needs, in case of View this will view state.
-/// - Parameter Action:             Outside world can send actions to the store to request changes. Outside world cannot change state directly.
+/// - Parameter State:              State that holds all data that feature needs.
+/// - Parameter Action:             Outside world can send actions to the store to request changes to the state.
 /// - Parameter InternalAction:     State can be changed only by sending an action but not all actions need to be public, some are internal to the reducer, that is why this exists.
 /// - Parameter Output:             Can be used for one-shot events. This is more convenient than trying to emulate events by manipulating state (e.g. setting shouldShowAlert to true and false).
 @MainActor
