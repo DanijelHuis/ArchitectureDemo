@@ -16,20 +16,20 @@ import Uniflow
         switch route {
             
         case .list:
-            let viewModel = Store(
+            let store = Store(
                 state: PokemonListViewModel.State.idle,
                 reducer: PokemonListViewModel(getPokemonListUseCase: Container.getPokemonListUseCase,
                                               coordinator: AppCoordinator(navigator: navigator))
             )
-            return PokemonListView(viewModel: viewModel)
+            return PokemonListView(store: store)
             
         case .details(let id):
-            let viewModel = Store(
+            let store = Store(
                 state: PokemonDetailsViewModel.State.idle,
                 reducer: PokemonDetailsViewModel(pokemonID: id,
                                                  getPokemonDetailsUseCase: Container.getPokemonDetailsUseCase)
             )
-            return PokemonDetailsView(viewModel: viewModel)
+            return PokemonDetailsView(store: store)
         }
     }
 }

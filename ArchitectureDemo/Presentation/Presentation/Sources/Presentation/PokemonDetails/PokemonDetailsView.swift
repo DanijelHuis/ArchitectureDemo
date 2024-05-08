@@ -10,21 +10,21 @@ import Domain
 import Uniflow
 
 public struct PokemonDetailsView: View {
-    /// Since view model can be any Store with same State/Action, that means that we can easily inject mock store for preview or snapshot testing. That also means that we can start
+    /// Since store can be any Store with same State/Action, that means that we can easily inject mock store for preview or snapshot testing. That also means that we can start
     /// making UI before any other logic is done.
-    @ObservedObject private var viewModel: StoreOf<PokemonDetailsViewModel>
+    @ObservedObject private var store: StoreOf<PokemonDetailsViewModel>
     /// Details view will have random background color that is not related to data.
     @State private var background = [ColorResource.background3, .background4, .background3].randomElement() ?? .background3
     
-    public init(viewModel: StoreOf<PokemonDetailsViewModel>) {
-        self.viewModel = viewModel
+    public init(store: StoreOf<PokemonDetailsViewModel>) {
+        self.store = store
     }
     
     public var body: some View {
         ZStack(alignment: .top) {
             Color(self.background).edgesIgnoringSafeArea(.all)
             
-            switch viewModel.state {
+            switch store.state {
             // Idle
             case .idle:
                 EmptyView()
@@ -36,7 +36,7 @@ public struct PokemonDetailsView: View {
             // Error
             case .error:
                 TryAgainView {
-                    viewModel.send(.getPokemonDetails)
+                    store.send(.getPokemonDetails)
                 }
                 
             // Loaded
@@ -65,17 +65,19 @@ public struct PokemonDetailsView: View {
                     
                     // Name
                     Text(state.name)
+                        .multilineTextAlignment(.center)
                         .textStyle(.heading1)
                     
                     // Type
                     Text(state.type)
+                        .multilineTextAlignment(.center)
                         .textStyle(.body1)
                 }
                 .padding(.spacing.double)
             }
         }
         .onFirstAppear {
-            viewModel.send(.getPokemonDetails)
+            store.send(.getPokemonDetails)
         }
     }
 }

@@ -10,12 +10,12 @@ import Domain
 import Uniflow
 
 public struct PokemonListView: View {
-    /// Since view model can be any Store with same State/Action, that means that we can easily inject mock store for preview or snapshot testing. That also means that we can start
+    /// Since store can be any Store with same State/Action, that means that we can easily inject mock store for preview or snapshot testing. That also means that we can start
     /// making UI before any other logic is done.
-    @ObservedObject private var viewModel: StoreOf<PokemonListViewModel>
+    @ObservedObject private var store: StoreOf<PokemonListViewModel>
     
-    public init(viewModel: StoreOf<PokemonListViewModel>) {
-        self.viewModel = viewModel
+    public init(store: StoreOf<PokemonListViewModel>) {
+        self.store = store
     }
     
     public var body: some View {
@@ -29,35 +29,35 @@ public struct PokemonListView: View {
                     .aspectRatio(contentMode: .fit)
                     .padding(.horizontal, .spacing.double)
                 
-                switch viewModel.state {
-                    // Idle
+                switch store.state {
+                // Idle
                 case .idle:
                     EmptyView()
                     
-                    // Loading view
+                // Loading view
                 case .loading(let text):
                     LoadingView(text: text)
                         .frame(maxHeight: .infinity)
                     
-                    // Error view
+                // Error view
                 case .error:
                     TryAgainView {
-                        viewModel.send(.loadNextPage)
+                        store.send(.loadNextPage)
                     }
                     .frame(maxHeight: .infinity)
                     
-                    // List
+                // List
                 case .loaded(let items, let hasMoreItems):
                     PokemonListComponent(items: items, hasMoreItems: hasMoreItems) { id in
-                        viewModel.send(.openDetails(id: id))
+                        store.send(.openDetails(id: id))
                     } onLoadMore: {
-                        viewModel.send(.loadNextPage)
+                        store.send(.loadNextPage)
                     }
                 }
             }
         }
         .onFirstAppear {
-            viewModel.send(.loadNextPage)
+            store.send(.loadNextPage)
         }
     }
 }

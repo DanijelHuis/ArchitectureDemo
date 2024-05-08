@@ -76,3 +76,5 @@ extension PokemonDetailsViewModel {
         case errorOccurred
     }
 }
+
+
