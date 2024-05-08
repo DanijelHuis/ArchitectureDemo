@@ -21,7 +21,7 @@ public class PokemonDetailsViewModel: Reducer {
         self.stateMapper = stateMapper
     }
     
-    public func reduce(action: Action, into state: inout State) -> Effect<Action, InternalAction, Output> {
+    public func reduce(action: Action, into state: inout State) -> Effect<Action> {
         switch action {
         case .getPokemonDetails:
             state = .loading()
@@ -33,10 +33,13 @@ public class PokemonDetailsViewModel: Reducer {
                     await send(.internalAction(.errorOccurred))
                 }
             }
+        
+        case .internalAction(let internalAction):
+            return reduce(internalAction: internalAction, into: &state)
         }
     }
     
-    public func reduce(internalAction: InternalAction, into state: inout State) -> Effect<Action, InternalAction, Never> {
+    public func reduce(internalAction: Action.InternalAction, into state: inout State) -> Effect<Action> {
         switch internalAction {
         case .didGetPokemonDetails(let pokemonDetails):
             state = .loaded(pokemonDetails: stateMapper.map(pokemonDetails: pokemonDetails))
@@ -69,11 +72,12 @@ extension PokemonDetailsViewModel {
     
     public enum Action {
         case getPokemonDetails
-    }
-    
-    public enum InternalAction {
-        case didGetPokemonDetails(_ pokemonDetails: PokemonDetails)
-        case errorOccurred
+        case internalAction(_ internalAction: InternalAction)
+        
+        public enum InternalAction {
+            case didGetPokemonDetails(_ pokemonDetails: PokemonDetails)
+            case errorOccurred
+        }
     }
 }
 

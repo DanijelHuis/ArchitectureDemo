@@ -17,18 +17,16 @@ import Combine
 ///
 /// - Parameter State:              State that holds all data that feature needs.
 /// - Parameter Action:             Outside world can send actions to the store to request changes to the state.
-/// - Parameter InternalAction:     State can be changed only by sending an action but not all actions need to be public, some are internal to the reducer, that is why this exists.
-/// - Parameter Output:             Can be used for one-shot events. This is more convenient than trying to emulate events by manipulating state (e.g. setting shouldShowAlert to true and false).
 @MainActor
-public class Store<State, Action, InternalAction, Output>: ObservableObject where Action: Sendable, InternalAction: Sendable {
+public class Store<State, Action>: ObservableObject where Action: Sendable {
     @Published public private(set) var state: State
     
-    private let reducer: any Reducer<State, Action, InternalAction, Output>
-    private let outputSubject: PassthroughSubject<Output, Never> = .init()
+    private let reducer: any Reducer<State, Action>
+    private let outputSubject: PassthroughSubject<Action, Never> = .init()
     private var effectManager = EffectManager()
     private var effectTasks = [Task<Void, Never>]()
     
-    public init(state: State, reducer: some Reducer<State, Action, InternalAction, Output>) {
+    public init(state: State, reducer: some Reducer<State, Action>) {
         self.state = state
         self.reducer = reducer
     }
@@ -40,33 +38,28 @@ public class Store<State, Action, InternalAction, Output>: ObservableObject wher
     // MARK: - send/reduce -
     
     @discardableResult public func send(_ action: Action) -> Task<Void, Never> {
-        let effect = reduce(actionAndInternalAction: .action(action))
-        let task = effectManager.runEffect(effect, outputSubject: outputSubject) { [weak self] actionAndInternalAction in
+        let effect = reduce(action: action)
+        let task = effectManager.runEffect(effect, outputSubject: outputSubject) { [weak self] effectAction in
             guard let self else { return .none }
-            return self.reduce(actionAndInternalAction: actionAndInternalAction)
+            return self.reduce(action: effectAction)
         }
         effectTasks.append(task)
         return task
     }
     
-    private func reduce(actionAndInternalAction: ActionAndInternalAction<Action, InternalAction>) -> Effect<Action, InternalAction, Output> {
-        switch actionAndInternalAction {
-        case .action(let action):
-            return self.reducer.reduce(action: action, into: &self.state)
-        case .internalAction(let internalAction):
-            return self.reducer.reduce(internalAction: internalAction, into: &self.state)
-        }
+    private func reduce(action: Action) -> Effect<Action> {
+        return self.reducer.reduce(action: action, into: &self.state)
     }
 }
 
 // MARK: - Effect -
 
-public struct Effect<Action, InternalAction, Output> {
-    public typealias Operation = (@Sendable (_ actionAndInternalAction: ActionAndInternalAction<Action, InternalAction>) async -> Void) async -> Void
-    let output: Output?
+public struct Effect<Action> {
+    public typealias Operation = (@Sendable (_ action: Action) async -> Void) async -> Void
+    let output: Action?
     let operation: Operation?
     
-    private init(output: Output?, operation: Operation?) {
+    private init(output: Action?, operation: Operation?) {
         self.output = output
         self.operation = operation
     }
@@ -75,7 +68,7 @@ public struct Effect<Action, InternalAction, Output> {
         .init(output: nil, operation: nil)
     }
     
-    public static func output(_ output: Output) -> Self {
+    public static func output(_ output: Action) -> Self {
         .init(output: output, operation: nil)
     }
     
@@ -87,26 +80,13 @@ public struct Effect<Action, InternalAction, Output> {
 // MARK: - Reducer -
 
 @MainActor
-public protocol Reducer<State, Action, InternalAction, Output>: AnyObject {
+public protocol Reducer<State, Action>: AnyObject {
     associatedtype State
     associatedtype Action
-    associatedtype InternalAction = Never
-    associatedtype Output = Never
-    
-    func reduce(action: Action, into state: inout State) -> Effect<Action, InternalAction, Output>
-    func reduce(internalAction: InternalAction, into state: inout State) -> Effect<Action, InternalAction, Output>
-}
 
-extension Reducer where InternalAction == Never {
-    /// If InternalAction is Never then we can provide default implementation for internal reducer.
-    public func reduce(internalAction: InternalAction, into state: inout State) -> Effect<Action, InternalAction, Output> { }
+    func reduce(action: Action, into state: inout State) -> Effect<Action>
 }
 
 // MARK: - Support -
 
-public enum ActionAndInternalAction<Action, InternalAction>: Sendable where Action: Sendable, InternalAction: Sendable {
-    case action(Action)
-    case internalAction(InternalAction)
-}
-
-public typealias StoreOf<R: Reducer> = Store<R.State, R.Action, R.InternalAction, R.Output>
+public typealias StoreOf<R: Reducer> = Store<R.State, R.Action>

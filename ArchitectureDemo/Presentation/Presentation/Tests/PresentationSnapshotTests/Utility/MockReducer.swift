@@ -8,14 +8,10 @@
 import Foundation
 import Uniflow
 
-typealias MockReducerOf<R: Reducer> = MockReducer<R.State, R.Action, R.InternalAction, R.Output>
+typealias MockReducerOf<R: Reducer> = MockReducer<R.State, R.Action>
 
-class MockReducer<State, Action, InternalAction, Output>: Reducer {
-    func reduce(action: Action, into state: inout State) -> Effect<Action, InternalAction, Output> {
-        return .none
-    }
-    
-    func reduce(internalAction: InternalAction, into state: inout State) -> Effect<Action, InternalAction, Output> {
+class MockReducer<State, Action>: Reducer {
+    func reduce(action: Action, into state: inout State) -> Effect<Action> {
         return .none
     }
 }

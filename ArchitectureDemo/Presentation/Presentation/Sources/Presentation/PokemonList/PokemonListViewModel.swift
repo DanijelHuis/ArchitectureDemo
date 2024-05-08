@@ -18,7 +18,7 @@ public final class PokemonListViewModel: Reducer {
         self.coordinator = coordinator
     }
     
-    public func reduce(action: Action, into state: inout State) -> Effect<Action, InternalAction, Never> {
+    public func reduce(action: Action, into state: inout State) -> Effect<Action> {
         switch action {
         case .loadNextPage:
             // If it is in loaded state then we don't need to show loading because load more is shown.
@@ -35,12 +35,15 @@ public final class PokemonListViewModel: Reducer {
             
         case .openDetails(let id):
             coordinator.openRoute(.pokemons(.details(id: id)))
+        
+        case .internalAction(let internalAction):
+            return reduce(internalAction: internalAction, into: &state)
         }
         
         return .none
     }
     
-    public func reduce(internalAction: InternalAction, into state: inout State) -> Effect<Action, InternalAction, Never> {
+    private func reduce(internalAction: Action.InternalAction, into state: inout State) -> Effect<Action> {
         switch internalAction {
         case .didGetPokemons(let pokemons, let hasMoreItems):
             state = .loaded(items: pokemons.map({ .init(id: $0.id, name: $0.name) }), hasMoreItems: hasMoreItems)
@@ -65,11 +68,12 @@ extension PokemonListViewModel {
     public enum Action {
         case loadNextPage
         case openDetails(id: String)
-    }
-    
-    public enum InternalAction {
-        case didGetPokemons(pokemons: [Pokemon], hasMoreItems: Bool)
-        case errorOccurred
+        case internalAction(_ internalAction: InternalAction)
+        
+        public enum InternalAction {
+            case didGetPokemons(pokemons: [Pokemon], hasMoreItems: Bool)
+            case errorOccurred
+        }
     }
 }
 

@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 extension Store {
-    typealias ReduceClosure = @MainActor @Sendable (_ actionAndInternalAction: ActionAndInternalAction<Action, InternalAction>) -> Effect<Action, InternalAction, Output>
+    typealias ReduceClosure = @MainActor @Sendable (_ action: Action) -> Effect<Action>
     
     /// EffectManager runs effects from the store.
     ///
@@ -35,17 +35,17 @@ extension Store {
         /// Runs effect and all its chained effects. Cancelling returned task will cancel whole chain.
         ///
         /// - Parameter effect:                 Effect to run.
-        /// - Parameter outputSubject:          Store's output subject, used to send output if effect has one.
+        /// - Parameter outputSubject:          Store's output subject for communication with the outside world (rarely needed).
         /// - Parameter reduce:                 Store's reduce function that runs reduce in reducer and returns effect.
-        func runEffect(_ effect: Effect<Action, InternalAction, Output>, outputSubject: PassthroughSubject<Output, Never>, reduce: @escaping ReduceClosure) -> Task<Void, Never> {
+        func runEffect(_ effect: Effect<Action>, outputSubject: PassthroughSubject<Action, Never>, reduce: @escaping ReduceClosure) -> Task<Void, Never> {
             Task {
-                await runEffect(effect, outputSubject: outputSubject) { actionAndInternalAction in
-                    return reduce(actionAndInternalAction)
+                await runEffect(effect, outputSubject: outputSubject) { action in
+                    return reduce(action)
                 }
             }
         }
         
-        private func runEffect(_ effect: Effect<Action, InternalAction, Output>, outputSubject: PassthroughSubject<Output, Never>, reduce: ReduceClosure) async {
+        private func runEffect(_ effect: Effect<Action>, outputSubject: PassthroughSubject<Action, Never>, reduce: ReduceClosure) async {
             guard !Task.isCancelled else { return }
             
             // Output
@@ -53,9 +53,9 @@ extension Store {
                 outputSubject.send(output)
             // Async operation
             } else if let operation = effect.operation {
-                await operation { actionAndInternalAction in
+                await operation { action in
                     guard !Task.isCancelled else { return }
-                    let effect = await reduce(actionAndInternalAction)
+                    let effect = await reduce(action)
                     await runEffect(effect, outputSubject: outputSubject, reduce: reduce)
                 }
             }
