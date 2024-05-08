@@ -27,9 +27,6 @@ let package = Package(
             dependencies: [
                 "Domain",
                 "Uniflow",
-            ],
-            resources: [
-                .copy("test1.png")
             ]
         ),
         .testTarget(

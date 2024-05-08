@@ -13,16 +13,14 @@ public struct PokemonDetailsView: View {
     /// Since store can be any Store with same State/Action, that means that we can easily inject mock store for preview or snapshot testing. That also means that we can start
     /// making UI before any other logic is done.
     @ObservedObject private var store: StoreOf<PokemonDetailsViewModel>
-    /// Details view will have random background color that is not related to data.
-    @State private var background = [ColorResource.background3, .background4, .background3].randomElement() ?? .background3
     
-    public init(store: StoreOf<PokemonDetailsViewModel>) {
+    public init(store: StoreOf<PokemonDetailsViewModel>, background: Color? = nil) {
         self.store = store
     }
     
     public var body: some View {
         ZStack(alignment: .top) {
-            Color(self.background).edgesIgnoringSafeArea(.all)
+            Color(ColorResource.background3).edgesIgnoringSafeArea(.all)
             
             switch store.state {
             // Idle

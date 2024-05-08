@@ -11,7 +11,7 @@ import SwiftUI
 @testable import Presentation
 
 final class TryAgainViewSnapshotTests: XCTestCase {
-    func test_tryAgainView() throws {
+    @MainActor func test_tryAgainView() throws {
         assertSnapshot(of: host(ContainerView()), as: .image(size: CGSize(width: 300, height: 400)))
     }
 }

@@ -11,7 +11,7 @@ import SwiftUI
 @testable import Presentation
 
 final class CapsuleTextSnapshotTests: XCTestCase {
-    func test_capsuleText() throws {
+    @MainActor func test_capsuleText() throws {
         assertSnapshot(of: host(ContainerView()), as: .image(size: CGSize(width: 200, height: 100)))
     }
 }

@@ -12,7 +12,6 @@ import TestUtility
 import Combine
 @testable import Presentation
 
-@MainActor
 final class PokemonDetailsViewModelTests: XCTestCase {
     private var getPokemonDetailsUseCase: MockGetPokemonDetailsUseCase!
     private var stateMapper: MockLoadedStateMapper!
@@ -29,7 +28,7 @@ final class PokemonDetailsViewModelTests: XCTestCase {
                                                                order: "state order", type: "type")
     }
     
-    override func setUp() {
+    @MainActor override func setUp() {
         getPokemonDetailsUseCase = .init()
         stateMapper = .init()
         sut = .init(pokemonID: "10", getPokemonDetailsUseCase: getPokemonDetailsUseCase, stateMapper: stateMapper)
@@ -41,7 +40,7 @@ final class PokemonDetailsViewModelTests: XCTestCase {
         stateCalls.removeAll()
     }
     
-    override func tearDown() {
+    @MainActor override func tearDown() {
         getPokemonDetailsUseCase = nil
         stateMapper = nil
         sut = nil
@@ -50,7 +49,7 @@ final class PokemonDetailsViewModelTests: XCTestCase {
     
     // MARK: - getPokemonDetails -
     
-    func test_getPokemonDetails_givenUseCaseSuccess_thenSetsStateToLoaded() async {
+    @MainActor func test_getPokemonDetails_givenUseCaseSuccess_thenSetsStateToLoaded() async {
         // Given
         getPokemonDetailsUseCase.getPokemonDetailsResult = .success(Mock.pokemonDetails)
         stateMapper.mapResult = Mock.state
@@ -62,7 +61,7 @@ final class PokemonDetailsViewModelTests: XCTestCase {
                                     .loaded(pokemonDetails: Mock.state)])
     }
     
-    func test_getPokemonDetails_givenUseCaseFailure_thenSetsStateToError() async {
+    @MainActor func test_getPokemonDetails_givenUseCaseFailure_thenSetsStateToError() async {
         // Given
         getPokemonDetailsUseCase.getPokemonDetailsResult = .failure(MockError.generalError("use case failure"))
         stateMapper.mapResult = Mock.state

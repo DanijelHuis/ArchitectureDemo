@@ -12,7 +12,6 @@ import TestUtility
 import Combine
 @testable import Presentation
 
-@MainActor
 final class PokemonListViewModelTests: XCTestCase {
     private var getPokemonListUseCase: MockGetPokemonListUseCase!
     private var coordinator: MockCoordinator!
@@ -30,7 +29,7 @@ final class PokemonListViewModelTests: XCTestCase {
         static let listItems = pokemons.map({ PokemonListItemView.State(id: $0.id, name: $0.name) })
     }
     
-    override func setUp() {
+    @MainActor override func setUp() {
         getPokemonListUseCase = .init()
         coordinator = .init()
         sut = .init(getPokemonListUseCase: getPokemonListUseCase, coordinator: coordinator)
@@ -42,7 +41,7 @@ final class PokemonListViewModelTests: XCTestCase {
         stateCalls.removeAll()
     }
     
-    override func tearDown() {
+    @MainActor override func tearDown() {
         getPokemonListUseCase = nil
         coordinator = nil
         sut = nil
@@ -51,7 +50,7 @@ final class PokemonListViewModelTests: XCTestCase {
     
     // MARK: - loadNextPage -
     
-    func test_loadNextPage_givenUseCaseSuccess_thenSetsStateToLoaded() async {
+    @MainActor func test_loadNextPage_givenUseCaseSuccess_thenSetsStateToLoaded() async {
         // Given
         getPokemonListUseCase.getPokemonsNextPageResult = .success(Mock.pokemons)
         getPokemonListUseCase.hasNextPage = false
@@ -63,7 +62,7 @@ final class PokemonListViewModelTests: XCTestCase {
                                     .loaded(items: Mock.listItems, hasMoreItems: false)])
     }
     
-    func test_loadNextPage_givenUseCaseFailure_thenSetsStateToError() async {
+    @MainActor func test_loadNextPage_givenUseCaseFailure_thenSetsStateToError() async {
         // Given
         getPokemonListUseCase.getPokemonsNextPageResult = .failure(MockError.generalError("use case failure"))
         getPokemonListUseCase.hasNextPage = false
@@ -74,7 +73,7 @@ final class PokemonListViewModelTests: XCTestCase {
                                     .error])
     }
     
-    func test_loadNextPage_givenPageAlreadyLoaded_thenDoesntSetStateToLoading() async {
+    @MainActor func test_loadNextPage_givenPageAlreadyLoaded_thenDoesntSetStateToLoading() async {
         // Given
         getPokemonListUseCase.getPokemonsNextPageResult = .success(Mock.pokemons)
         getPokemonListUseCase.hasNextPage = false
@@ -89,7 +88,7 @@ final class PokemonListViewModelTests: XCTestCase {
     
     // MARK: - hasMoreItems -
     
-    func test_loadNextPage_givenHasNextPageIsTrue_thenHasMoreItemsIsSetToTrue() async {
+    @MainActor func test_loadNextPage_givenHasNextPageIsTrue_thenHasMoreItemsIsSetToTrue() async {
         // Given
         getPokemonListUseCase.getPokemonsNextPageResult = .success(Mock.pokemons)
         getPokemonListUseCase.hasNextPage = true
@@ -99,7 +98,7 @@ final class PokemonListViewModelTests: XCTestCase {
         XCTAssertEqual(store.state, .loaded(items: Mock.listItems, hasMoreItems: true))
     }
     
-    func test_loadNextPage_givenHasNextPageIsFalse_thenHasMoreItemsIsSetToFalse() async {
+    @MainActor func test_loadNextPage_givenHasNextPageIsFalse_thenHasMoreItemsIsSetToFalse() async {
         // Given
         getPokemonListUseCase.getPokemonsNextPageResult = .success(Mock.pokemons)
         getPokemonListUseCase.hasNextPage = false
@@ -111,7 +110,7 @@ final class PokemonListViewModelTests: XCTestCase {
     
     // MARK: - openDetails -
     
-    func test_openDetails_thenCallsCoordinator() {
+    @MainActor func test_openDetails_thenCallsCoordinator() {
         // When
         store.send(.openDetails(id: "10"))
         // Then
