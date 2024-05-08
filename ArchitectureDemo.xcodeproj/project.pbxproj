@@ -38,7 +38,7 @@
 		0C141E652BE2A520005E074C /* URLSessionNetworkingAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionNetworkingAdapter.swift; sourceTree = "<group>"; };
 		0C4F304D2BE8209E00A98D4B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0C6BF3A82BE6712400CDA6FD /* TestUtility */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TestUtility; sourceTree = "<group>"; };
-		0C85D73C2BE90E5100E5306D /* AllUnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = AllUnitTests.xctestplan; path = Resources/AllUnitTests.xctestplan; sourceTree = "<group>"; };
+		0C85D73C2BE90E5100E5306D /* AllUnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = AllUnitTests.xctestplan; sourceTree = "<group>"; };
 		0CC5E3772BE29CE80065A5F1 /* ArchitectureDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArchitectureDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CC5E37E2BE29CE90065A5F1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0CC5E3812BE29CE90065A5F1 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -91,7 +91,6 @@
 		0CC5E36E2BE29CE80065A5F1 = {
 			isa = PBXGroup;
 			children = (
-				0C85D73C2BE90E5100E5306D /* AllUnitTests.xctestplan */,
 				0CC5E3792BE29CE80065A5F1 /* ArchitectureDemo */,
 				0CC5E3A42BE29D390065A5F1 /* Resources */,
 				0CC5E38A2BE29CE90065A5F1 /* ArchitectureDemoTests */,
@@ -141,6 +140,7 @@
 		0CC5E3A42BE29D390065A5F1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				0C85D73C2BE90E5100E5306D /* AllUnitTests.xctestplan */,
 				0CC5E3A52BE29D480065A5F1 /* Assets */,
 			);
 			path = Resources;

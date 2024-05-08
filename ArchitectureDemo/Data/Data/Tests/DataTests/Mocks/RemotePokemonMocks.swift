@@ -31,8 +31,7 @@ extension RemotePokemonDetails.Sprites {
     
     static func mock(spriteID: String) -> RemotePokemonDetails.Sprites {
         .init(frontDefault: URL(string: "\(spriteID)_frontDefault"),
-              other: .init(home: .init(frontDefault: URL(string: "\(spriteID)_home_frontDefault"))
-                          )
+              other: .init(home: .init(frontDefault: URL(string: "\(spriteID)_home_frontDefault")))
         )
     }
 }

@@ -38,19 +38,19 @@ extension CustomButtonStyle: ButtonStyle {
     /// This is called by ButtonStyle, we get access to label and isPressed property. Here we apply button style and apply label style to layout title (and icon optionally).
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-        // Font
+            // Font
             .font(font)
         
-        // This is needed for button to change height when title size is increased.
+            // This is needed for button to change height when title size is increased.
             .fixedSize(horizontal: false, vertical: true)
         
-        // Foreground
+            // Foreground
             .modifier(ifLet: foregroundColor) { $0.foregroundColor($1) }
         
-        // Padding
+            // Padding
             .padding(padding)
         
-        // Background
+            // Background
             .modifier {
                 if let backgroundColor = backgroundColor {
                     let backgroundColor = configuration.isPressed ? backgroundColor.opacity(0.5) : backgroundColor
@@ -61,10 +61,10 @@ extension CustomButtonStyle: ButtonStyle {
                 }
             }
         
-        // Rounding
+            // Rounding
             .modifier(ifLet: roundingStyle) { renderRoundingStyle(content: $0, roundingStyle: $1) }
         
-        // Other
+            // Other
             .multilineTextAlignment(.center)
     }
     

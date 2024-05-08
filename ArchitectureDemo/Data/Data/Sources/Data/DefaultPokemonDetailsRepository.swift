@@ -15,7 +15,7 @@ final public class DefaultPokemonDetailsRepository: PokemonDetailsRepository {
         self.httpClient = httpClient
     }
         
-    /// Fetches pokemon for given `name` (name serves as identifier).
+    /// Fetches pokemon for given `id`.
     public func getPokemonDetails(id: String) async throws -> PokemonDetails {
         let path = "\(API.Endpoint.pokemon)/\(id)"
         var request = try await httpClient.buildRequest(method: .get,

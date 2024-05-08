@@ -1,5 +1,5 @@
 //
-//  DefaultPokemonRepositoryTests.swift
+//  DefaultPokemonListRepositoryTests.swift
 //
 //
 //  Created by Danijel Huis on 04.05.2024..
@@ -8,7 +8,7 @@
 import XCTest
 @testable import Data
 
-final class DefaultPokemonRepositoryTests: XCTestCase {
+final class DefaultPokemonListRepositoryTests: XCTestCase {
     private var httpClient: MockHTTPClient!
     private var sut: DefaultPokemonListRepository!
     

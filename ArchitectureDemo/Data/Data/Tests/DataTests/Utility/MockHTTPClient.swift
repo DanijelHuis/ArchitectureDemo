@@ -42,8 +42,7 @@ final class MockHTTPClient: HTTPClient {
 extension MockHTTPClient {
     func setup(buildRequest: Bool, authorizeRequest: Bool, response: Any?) {
         buildRequestResult = buildRequest ? .success(MockHTTPClient.originalRequest) : .failure(MockError.generalError("build request failed"))
-        authorizeRequestResult = authorizeRequest ? .success(MockHTTPClient.authorizedRequest) :
-            .failure(MockError.generalError("authorize request failed"))
+        authorizeRequestResult = authorizeRequest ? .success(MockHTTPClient.authorizedRequest) : .failure(MockError.generalError("authorize request failed"))
         
         if let response {
             performRequestResult = .success(response)

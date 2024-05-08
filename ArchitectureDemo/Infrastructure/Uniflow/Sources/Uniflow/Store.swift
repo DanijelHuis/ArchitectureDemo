@@ -20,7 +20,9 @@ import Combine
 @MainActor
 public class Store<State, Action>: ObservableObject where Action: Sendable {
     @Published public private(set) var state: State
-    
+    /// This can be used in rare occasions when outside world (not view) needs to receive events from this store.
+    var output: AnyPublisher<Action, Never> { outputSubject.eraseToAnyPublisher() }
+
     private let reducer: any Reducer<State, Action>
     private let outputSubject: PassthroughSubject<Action, Never> = .init()
     private var effectManager = EffectManager()
@@ -37,18 +39,19 @@ public class Store<State, Action>: ObservableObject where Action: Sendable {
     
     // MARK: - send/reduce -
     
+    /// Sends action to reducer. Reducer will modify the state (depending on the action) which will trigger state publisher.
     @discardableResult public func send(_ action: Action) -> Task<Void, Never> {
         let effect = reduce(action: action)
         let task = effectManager.runEffect(effect, outputSubject: outputSubject) { [weak self] effectAction in
             guard let self else { return .none }
-            return self.reduce(action: effectAction)
+            return reduce(action: effectAction)
         }
         effectTasks.append(task)
         return task
     }
     
     private func reduce(action: Action) -> Effect<Action> {
-        return self.reducer.reduce(action: action, into: &self.state)
+        return reducer.reduce(action: action, into: &state)
     }
 }
 

@@ -41,7 +41,7 @@ public final class DefaultGetPokemonListUseCase: GetPokemonListUseCase {
     /// Returns true if there is next page. This will return true if pages were fetched previously and there is more items to fetch.
     public var hasNextPage: Bool { paginationManager.nextPage != nil }
     
-    /// Resets all data - page index and accumulated items.
+    /// Clears pages and items.
     public func removeAllPages() {
         paginationManager.removeAllPages()
         items.removeAll()

@@ -10,7 +10,6 @@ import Foundation
 
 /// Builds URLRequest from given inputs. It adds JSON headers automatically.
 public final class URLSessionJSONRequestBuilder {
-    // @TODO can we make this non-optional?
     private let baseURL: URL?
     
     public init(baseURL: URL?) {
