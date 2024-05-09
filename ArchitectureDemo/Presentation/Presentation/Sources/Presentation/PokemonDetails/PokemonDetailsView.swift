@@ -65,6 +65,7 @@ public struct PokemonDetailsView: View {
                     Text(state.name)
                         .multilineTextAlignment(.center)
                         .textStyle(.heading1)
+                        .accessibilityIdentifier("pokemon_details_title")
                     
                     // Type
                     Text(state.type)
