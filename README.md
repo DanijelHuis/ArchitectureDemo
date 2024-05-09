@@ -1,4 +1,4 @@
-This demo is meant to accompany my CV and provide insight into what kind of architecture I currently use or I am simply interested in.
+This demo is meant to accompany my CV and provide insight into what kind of architecture I currently use. The focus is on the architecture and testing. In the text below I explain where I currently stand regarding some of the important technical questions and why I chose what I chose for building the demo app.
 
 App uses PokeAPI to fetch list of pokemons and present details.
 
@@ -24,7 +24,7 @@ I use async/await, AsyncSequence, structured concurrency and actor isolation eve
 All that said, Combine is still needed if we need multiple subscribers or some advanced operations that AsyncSequence currently doesn't offer. Also, Combine is very convenient to use as data binding for SwiftUI.
 
 ## Unit testing, snapshot testing, UI testing
-Recently I started using snapshot testing alongside unit testing. I find it very powerful and very easy to write. It has already proven its use many times in my previous project, e.g. we found some UI bugs when updating app to iOS 17. All views and components in demo app have snapshot tests.
+On my previous project we started using snapshot testing alongside unit testing. I find it very powerful and very easy to write. It has already proven its use many times in my previous project, e.g. we found some UI bugs when updating app to iOS 17. All views and components in demo app have snapshot tests.
 
 ![ArchitectureDemo](ReadmeResources/snapshot1.png?raw=true "List snapshot tests")
 
@@ -35,7 +35,7 @@ For UI testing I only have experience with Maestro and I find it very easy and i
 ## Coordinator
 Demo app uses coordinator pattern to decouple views. I like to inject coordinator into reducer/view model and not call it directly from the view, that way I can test it.
 
-Coordinator in demo app uses one enum split in sub-enums, each sub-enum has its own child coordinator. I have used many approaches in the past, including completely decentralised routes, standard parent-child coordinator and so on. I ended up using completely centrealised coordinator for simplicity and because I like having one function that can open any view in the app. Also having single mock for all unit tests is great.
+Coordinator in demo app uses one enum split in sub-enums, each sub-enum has its own child coordinator. I have used many approaches in the past, including completely decentralised routes, standard parent-child coordinator and so on. I ended up using completely centrealised coordinator for simplicity and because I like having one function that can open any view in the app. Also having single mock for all unit tests is great. Note that my implementation of Coordinator is not perfect, I am aware of that (AnyView), it is built for ultimate convenience of use.
 
 ## SwiftUI
 App uses SwiftUI which works very well with unidrectional data flow. Some notes:
