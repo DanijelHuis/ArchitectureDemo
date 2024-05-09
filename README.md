@@ -3,7 +3,7 @@ This demo is meant to accompany my CV and provide insight into what kind of arch
 App uses PokeAPI to fetch list of pokemons and present details.
 
 ## UI architecture
-Unidirection data flow is definitely my choice when it comes to SwiftUI. There are many flavours of it, the main characteristics that I like are:
+I have extensive experience with MVC and MVVM architectures but Unidirectional Data Flow is definitely my choice when it comes to SwiftUI. There are many flavours of it, the main characteristics that I like are:
 - view is reflection of a state. State is simple struct without any logic.
 - view cannot change state directly, it can send actions and listen to changes in state (unidirectional).
 - view knows only about state and action, it doesn't need to know concrete view model / store. This makes it easy to make previews and snapshot tests.
