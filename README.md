@@ -25,13 +25,16 @@ All that said, Combine is still needed if we need multiple subscribers or some a
 
 ## Unit testing, snapshot testing, UI testing
 Recently I started using snapshot testing alongside unit testing. I find it very powerful and very easy to write. It has already proven its use many times in my previous project, e.g. we found some UI bugs when updating app to iOS 17. All views and components in demo app have snapshot tests.
+![ArchitectureDemo](ReadmeResources/snapshot1.png?raw=true "List snapshot tests")
+![ArchitectureDemo](ReadmeResources/snapshot2.png?raw=true "Components snapshot tests")
 
-For UI testing I only have experience with Maestro and I find it very easy and intuitive to use. (Currently demo app doesn't have Maestro tests because of dependency but I will add it).
+For UI testing I only have experience with Maestro and I find it very easy and intuitive to use. It uses some sort of magic to handle all timings and async events in the app, we don't need to think about it, it just works.
+![ArchitectureDemo](ReadmeResources/maestro_test.mp4)
 
 ## Coordinator
 Demo app uses coordinator pattern to decouple views. I like to inject coordinator into reducer/view model and not call it directly from the view, that way I can test it.
 
-Coordinator in demo app uses one enum split in sub-enums, each sub-enum has its own child coordinator. I have used many approaches in the past, including completely decentralised routes, standard parent-child coordinator and so on. I ended up using completely centrealised coordinator for simplicity and because I like having one function that can open any view in the app (it is still scalable).
+Coordinator in demo app uses one enum split in sub-enums, each sub-enum has its own child coordinator. I have used many approaches in the past, including completely decentralised routes, standard parent-child coordinator and so on. I ended up using completely centrealised coordinator for simplicity and because I like having one function that can open any view in the app. Also having single mock for all unit tests is great.
 
 ## SwiftUI
 App uses SwiftUI which works very well with unidrectional data flow. Some notes:
@@ -40,8 +43,9 @@ App uses SwiftUI which works very well with unidrectional data flow. Some notes:
 - views don't depend on concrete stores so we can make mock stores for preview and snapshot testing.
 
 ## Dependency graph
+Things to note on this graph:
+- the direction of arrows - they all point upwards
+- dependency injection (protocol vs. implementation)
 
-![Alt text](dependency_graph.png?raw=true "Dependency graph")
-
-
+![ArchitectureDemo](ReadmeResources/dependency_graph.png?raw=true "Dependency graph")
 
