@@ -39,7 +39,7 @@ private extension RemotePokemonDetails {
         
         return PokemonDetails(
             id: id,
-            name: name,
+            name: name.capitalized,
             weight: weight,
             height: height,
             order: order,

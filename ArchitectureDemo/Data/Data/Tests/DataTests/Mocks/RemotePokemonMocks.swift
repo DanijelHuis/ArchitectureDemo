@@ -10,7 +10,7 @@ import Foundation
 
 extension RemotePokemonDetails {
     static func mock(id: Int,
-                     name: String = "Pokemon1",
+                     name: String = "pokemon1",
                      weight: Int = 100,
                      height: Int = 200,
                      order: Int = 300,
