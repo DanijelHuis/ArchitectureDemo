@@ -29,8 +29,7 @@ Recently I started using snapshot testing alongside unit testing. I find it very
 ![ArchitectureDemo](ReadmeResources/snapshot2.png?raw=true "Components snapshot tests")
 
 For UI testing I only have experience with Maestro and I find it very easy and intuitive to use. It uses some sort of magic to handle all timings and async events in the app, we don't need to think about it, it just works.
-https://github.com/DanijelHuis/ArchitectureDemo/assets/5382135/8983fe4f-914a-48c1-92f8-c1c53f4fdb7a
-
+![ArchitectureDemo](https://github.com/DanijelHuis/ArchitectureDemo/assets/5382135/8983fe4f-914a-48c1-92f8-c1c53f4fdb7a)
 
 ## Coordinator
 Demo app uses coordinator pattern to decouple views. I like to inject coordinator into reducer/view model and not call it directly from the view, that way I can test it.
