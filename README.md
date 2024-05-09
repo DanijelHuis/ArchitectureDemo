@@ -26,10 +26,9 @@ All that said, Combine is still needed if we need multiple subscribers or some a
 ## Unit testing, snapshot testing, UI testing
 Recently I started using snapshot testing alongside unit testing. I find it very powerful and very easy to write. It has already proven its use many times in my previous project, e.g. we found some UI bugs when updating app to iOS 17. All views and components in demo app have snapshot tests.
 ![ArchitectureDemo](ReadmeResources/snapshot1.png?raw=true "List snapshot tests")
-![ArchitectureDemo](ReadmeResources/snapshot2.png?raw=true "Components snapshot tests")
 
 For UI testing I only have experience with Maestro and I find it very easy and intuitive to use. It uses some sort of magic to handle all timings and async events in the app, we don't need to think about it, it just works.
-![ArchitectureDemo](ReadmeResources/maestro_test.mp4)
+<video src="https://github.com/DanijelHuis/ArchitectureDemo/assets/5382135/8983fe4f-914a-48c1-92f8-c1c53f4fdb7a"></video>
 
 ## Coordinator
 Demo app uses coordinator pattern to decouple views. I like to inject coordinator into reducer/view model and not call it directly from the view, that way I can test it.
