@@ -1,0 +1,8 @@
+appId: "com.danijelhuis.ArchitectureDemo"
+---
+- tapOn: "Charizard"
+- assertVisible:
+    id: "pokemon_details_title"
+    text: "Charizard"
+- assertVisible: "170,00 cm"
+- assertVisible: "90,50 kg"
