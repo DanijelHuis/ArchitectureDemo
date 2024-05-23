@@ -1,5 +1,10 @@
 appId: "com.danijelhuis.ArchitectureDemo"
 ---
+- launchApp:
+    appId: "com.danijelhuis.ArchitectureDemo"
+    clearState: true
+    permissions: { all: allow }
+    
 - tapOn: "Charizard"
 - assertVisible:
     id: "pokemon_details_title"
