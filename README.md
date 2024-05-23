@@ -1,9 +1,11 @@
-This demo is meant to accompany my CV and provide insight into what kind of architecture I currently use. The focus is on the architecture and testing. In the text below I explain where I currently stand regarding some of the important technical questions and why I chose what I chose for building the demo app.
+This demo is meant to accompany my CV and provide insight into what kind of architecture I currently use. The focus is on the architecture and testability. 
+
+Overall architecture tries to follow clean architecture, if we look at the components it is very similar to VIPER (use case = interactor, presenter = reducer etc.) but adapted for SwiftUI and state based unidirectional approach. That all comes with the cost of extra boilerplate code and added complexity, not every project needs this or can afford it, but I am using it to demonstrate clean architecture principles. In the text below I explain more where I currently stand regarding some of the important technical questions and why I chose what I chose for building the demo app.
 
 App uses PokeAPI to fetch list of pokemons and present details.
 
 ## UI architecture
-I have extensive experience with MVC and MVVM architectures but Unidirectional Data Flow is definitely my choice when it comes to SwiftUI. There are many flavours of it, the main characteristics that I like are:
+I have extensive experience with MVC and MVVM architectures but Unidirectional Data Flow (MVI) is definitely my choice when it comes to SwiftUI. There are many flavours of it, the main characteristics that I like are:
 - view is reflection of a state. State is simple struct without any logic.
 - view cannot change state directly, it can send actions and listen to changes in state (unidirectional).
 - view knows only about state and action, it doesn't need to know concrete view model / store. This makes it easy to make previews and snapshot tests.
@@ -14,6 +16,7 @@ The nearest implementation of this for Swift is The Composable Architecture whic
 I've split the demo app into four layers - Infrastructure, Domain, Data and Presentation. The goals are:
 - to restrict dependencies between layers. Lower layers (e.g. Domain) shouldn't know anything about higher layers (e.g. Presentation). Full dependency graph is at the end of this readme. Note the direction of dependencies and injection of protocols.
 - define entties and protocols in domain layer and use only those in the app, that way app is far less susceptible to changes in outside world.
+- we define use cases to simplify logic and so we can inject only protocols that are needed (interface segregation).
 - improve testability by loose coupling (injecting protocols) between layers.
 
 Note that this kind of modularisation won't help much regarding build times or separating work between teams, that is not the purpose of it. Per-feature modularistaion is a better choice if we want that.
