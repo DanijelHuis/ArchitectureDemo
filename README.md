@@ -14,7 +14,7 @@ This architecture has some similarities with architectures like The Composable A
 
 ## Clean architecture & modularization
 I've split the demo app into four layers: infrastructure, domain, data, and presentation. The goals are:
-- to restrict dependencies between layers. Lower layers (e.g. domain) shouldn't know anything about higher layers (e.g. presentation). Full dependency graph is at the end of this readme. Note the direction of dependencies and the injection of protocols.
+- to restrict dependencies between layers. Lower layers (e.g. domain) shouldn't know anything about higher layers (e.g. presentation).
 - define entities and protocols in domain layer and use only those in the app, that way app is far less susceptible to changes in the outside world.
 - we define use cases to simplify logic, so we can inject only protocols that are needed (interface segregation).
 - improve testability by loose coupling (injecting protocols) between layers.
@@ -31,14 +31,14 @@ On my previous project, we started using snapshot testing alongside unit testing
 
 ![ArchitectureDemo](ReadmeResources/snapshot1.png?raw=true "List snapshot tests")
 
-For UI testing I only have experience with Maestro and I find it very easy and intuitive to use. It uses some sort of magic to handle all timing and async events in the app, we don't need to think about it, it just works.
+For UI testing I used Maestro. I find it very easy and intuitive to use. It uses some sort of magic to handle all timings and async events in the app, we don't need to think about it - it just works.
 
 <video src="https://github.com/DanijelHuis/ArchitectureDemo/assets/5382135/8983fe4f-914a-48c1-92f8-c1c53f4fdb7a"></video>
 
 ## Coordinator
-The demo app uses a coordinator pattern to decouple views. I like to inject the coordinator into the reducer/view model and not call it directly from the view, that way I can test it.
+The demo app uses a coordinator pattern to decouple views. I like to inject the coordinator into the view model and not call it directly from the view, that way I can test it.
 
-The coordinator in the demo app uses one enum split into sub-enums, each sub-enum has its own child coordinator. I have used many approaches in the past, including completely decentralized routes, standard parent-child coordinator and so on. I ended up using a completely centralized coordinator for simplicity and because I like having one function that can open any view in the app. Also, having a single mock for all unit tests is great. Note that my implementation of Coordinator is not perfect, I am aware of that (AnyView), it is built for ultimate convenience of use.
+The coordinator in the demo app uses one enum split into sub-enums, each sub-enum has its own child coordinator. I have used many approaches in the past, including completely decentralized routes, standard parent-child coordinator and so on. I ended up using a centralized coordinator for simplicity and because I like having one function that can open any view in the app. Also, having a single mock for all unit tests is great. Note that my implementation of Coordinator is not perfect, I am aware of that (AnyView), it is built for ultimate convenience of use.
 
 ## SwiftUI
 The app uses SwiftUI which works very well with unidrectional data flow. Some notes:
