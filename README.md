@@ -1,16 +1,16 @@
 This demo is meant to accompany my CV and provide insight into what kind of architecture I currently use. The focus is on the architecture and testability. 
 
-Overall architecture tries to follow clean architecture, if we look at the components it is very similar to VIPER (use case = interactor, presenter = reducer etc.) but adapted for SwiftUI and state based unidirectional approach. That all comes with the cost of extra boilerplate code and added complexity, not every project needs this or can afford it, but I am using it to demonstrate clean architecture principles. In the text below I explain more where I currently stand regarding some of the important technical questions and why I chose what I chose for building the demo app.
+Overall architecture tries to follow clean architecture, adapted for SwiftUI and state-based unidirectional approach. In the text below I explain everything more detailed.
 
-App uses PokeAPI to fetch list of pokemons and present details.
+App is simple RSS reader, it allows user to add RSS feeds and view its contents. It also allows adding favourites.
 
 ## UI architecture
-I have extensive experience with MVC and MVVM architectures but Unidirectional Data Flow (MVI) is definitely my choice when it comes to SwiftUI. There are many flavours of it, the main characteristics that I like are:
-- view is reflection of a state. State is simple struct without any logic.
-- view cannot change state directly, it can send actions and listen to changes in state (unidirectional).
-- view knows only about state and action, it doesn't need to know concrete view model / store. This makes it easy to make previews and snapshot tests.
+I have extensive experience with MVC and MVVM architectures but for this demo I chose simple MVI architecture implementing unidirectional data flow pattern, this is something we used on our last project and it worked very well. Important parts are:
+- view is reflection of a state. State is simple struct without any logic. State can contain only finalised formatted data ready to present on the view. This means that View is dependent only on data that it really needs so we can easily make previews and snapshot tests.
+- view cannot change state directly, it can send actions (intent) and listen to changes in state. This makes app easier to reason with and more predictable.
+- view knows only about state and action, it doesn't need to know concrete view model. This also makes it easy to make previews and snapshot tests.
 
-The nearest implementation of this for Swift is The Composable Architecture which is inspired by Redux/Elm. These architectures have shared state for whole app, that is great but I still prefer to have isolated state for each view because it simplifies whole architecture and avoids many problems (scoping state and reducer etc.). For demo purposes app uses custom implementation of unidirectional data flow pattern (See Uniflow package).
+This architecture has some similarities with architectures like The Composable Architecture (TCA) and Redux - it has state and action and is unidirectional. On the other hand it is very different - it doesn't allow scoping and composing states/reducers and it doesn't have single state for whole app. It is much more similar to MVVM, where view model contains state only for the view.
 
 ## Clean architecture & modularisation
 I've split the demo app into four layers - Infrastructure, Domain, Data and Presentation. The goals are:
@@ -22,7 +22,7 @@ I've split the demo app into four layers - Infrastructure, Domain, Data and Pres
 Note that this kind of modularisation won't help much regarding build times or separating work between teams, that is not the purpose of it. Per-feature modularistaion is a better choice if we want that.
 
 ## Combine, async/await, AsyncSequence
-I use async/await, AsyncSequence, structured concurrency and actor isolation everyhere I can (e.g. repositories, use cases, reducers). I very much prefer the top-down readability of async/await (AsyncSequence) code compared to closure based Combine. I also prefer error handling, cancellation propagation and composability of async throwable functions. Combine currently doesn't support actor isolation which is also big downside.
+I use async/await, AsyncSequence, structured concurrency and actor isolation everyhere I can. I very much prefer the top-down readability of async/await (AsyncSequence) code compared to closure based Combine. I also prefer error handling, cancellation propagation and composability of async throwable functions. Combine currently doesn't support actor isolation which is also big downside.
 
 All that said, Combine is still needed if we need multiple subscribers or some advanced operations that AsyncSequence currently doesn't offer. Also, Combine is very convenient to use as data binding for SwiftUI.
 
@@ -46,10 +46,7 @@ App uses SwiftUI which works very well with unidrectional data flow. Some notes:
 - SwiftUI is great for making small components, that is why I separated small components such as ErrorView, TryAgainView, LoadMore etc. and reused them between views.
 - views don't depend on concrete stores so we can make mock stores for preview and snapshot testing.
 
-## Dependency graph
-Things to note on this graph:
-- the direction of arrows - they all point upwards
-- dependency injection (protocol vs. implementation)
+## Dependency injection
+I use constructor dependency injection. Previously I've used *Factory* , it is useful and convenient but construction injection works well for this demo.
 
-![ArchitectureDemo](ReadmeResources/dependency_graph.png?raw=true "Dependency graph")
 

@@ -1,0 +1,66 @@
+{
+  "configurations" : [
+    {
+      "id" : "6EE29B66-D132-49F4-B062-2D903BF6F552",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "language" : "en",
+    "region" : "HR",
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Feedy.xcodeproj",
+      "identifier" : "0CE571842BF7702900F75AE9",
+      "name" : "Feedy"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Feedy.xcodeproj",
+        "identifier" : "0CE571942BF7702A00F75AE9",
+        "name" : "FeedyTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Feedy\/Presentation",
+        "identifier" : "PresentationTests",
+        "name" : "PresentationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Feedy\/Data",
+        "identifier" : "DataTests",
+        "name" : "DataTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Feedy\/Domain",
+        "identifier" : "DomainTests",
+        "name" : "DomainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Feedy\/Infrastructure\/URLSessionNetworking",
+        "identifier" : "URLSessionNetworkingTests",
+        "name" : "URLSessionNetworkingTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Feedy\/Infrastructure\/Localization",
+        "identifier" : "LocalizationTests",
+        "name" : "LocalizationTests"
+      }
+    }
+  ],
+  "version" : 1
+}

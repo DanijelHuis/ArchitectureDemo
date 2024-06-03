@@ -1,0 +1,18 @@
+appId: "com.test.feedy"
+---
+- launchApp:
+    appId: "com.test.feedy"
+    clearState: true
+    permissions: { all: allow }
+
+- tapOn:
+    id: "list_add"
+    index: 0
+- tapOn:
+    id: "url_textfield"
+- inputText: "invalid url"
+- tapOn:
+    id: "add_button"
+- assertVisible:
+    id: "error_text"
+    text: "Failed to validate RSS channel."
