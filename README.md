@@ -1,16 +1,14 @@
-This demo is meant to accompany my CV and provide insight into what kind of architecture I currently use. The focus is on the architecture and testability. 
-
-Overall architecture tries to follow clean architecture, adapted for SwiftUI and a state-based unidirectional approach. In the text below I explain everything in more detail.
+This demo is meant to accompany my CV and provide insight into my code and how I structure apps. Overall, demo tries to follow clean architecture, adapted for SwiftUI and a state-action unidirectional approach. In the text below I explain everything in more detail.
 
 The app is a simple RSS reader, it allows users to add RSS feeds and view their contents. It also allows for adding favorites.
 
 ## UI architecture
-I have extensive experience with MVC and MVVM architectures but for this demo I chose a simple MVI architecture implementing a unidirectional data flow pattern, this is something we used on our last project and it worked very well. Important parts are:
+I have extensive experience with MVC and MVVM but for this demo I chose simple MVI architecture, this is something we used on our last project and it worked very well. It is basically MVVM but with state and action (and unidirectional flow). Important parts are:
 - view is a reflection of a state. State is a simple struct without any logic. The state can contain only finalized, formatted data ready to be presented on the view. This means that View is dependent only on the data that it really needs, so we can easily make previews and snapshot tests.
 - view cannot change state directly, it can send actions (intents) and listen to changes in state. This makes the app easier to reason with and more predictable.
 - view knows only about state and action, it doesn't need to know concrete view model. This also makes it easy to make previews and snapshot tests.
 
-This architecture has some similarities with architectures like The Composable Architecture (TCA) and Redux - it has state and action and is unidirectional. On the other hand it is very different - it doesn't allow scoping and composing states/reducers and it doesn't have a single state for the whole app. It is much more similar to MVVM, where the view model contains state only for the view.
+This architecture has some similarities with The Composable Architecture (TCA) and Redux - it has state and action and is unidirectional. On the other hand it is very different - it doesn't allow scoping and composing states/reducers and it doesn't have a single state for the whole app. It is much more similar to MVVM, where the view model contains data that is specific to some view.
 
 ## Clean architecture & modularization
 I've split the demo app into four layers: infrastructure, domain, data, and presentation. The goals are:
