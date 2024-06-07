@@ -6,7 +6,7 @@
 //
 
 import XCTest
-import Domain
+@testable import Domain
 import TestUtility
 import Combine
 @testable import Presentation
@@ -19,7 +19,6 @@ final class RSSChannelListViewModelTests: XCTestCase {
     private var coordinator: MockCoordinator!
     private var effectManager: SideEffectManager!
     private var sut: RSSChannelListViewModel!
-    
     private var stateCalls = [RSSChannelListViewModel.State]()
     private var cancellables: Set<AnyCancellable> = []
     
@@ -113,7 +112,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         getRSSChannelsUseCase.getRSSChannelsResult = Mock.channels
         getRSSHistoryItemsUseCase.subject.send(.init(reason: .remove(historyItemID: UUID()), historyItems: Mock.historyItems))
         await effectManager.wait()
-        // Then: refreshes list
+        // Then: list shows errors which means list was refreshed and not reloaded
         XCTAssertEqual(sut.state.status.cellTitles, ["rss_list_failed_to_load_channel".localizedOrRandom, "rss_list_failed_to_load_channel".localizedOrRandom])
 
         // When: .favouriteStatusUpdated event
@@ -121,7 +120,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         getRSSChannelsUseCase.getRSSChannelsResult = Mock.channels
         getRSSHistoryItemsUseCase.subject.send(.init(reason: .favouriteStatusUpdated(historyItemID: UUID()), historyItems: Mock.historyItems))
         await effectManager.wait()
-        // Then: refreshes list
+        // Then: list shows errors which means list was refreshed and not reloaded
         XCTAssertEqual(sut.state.status.cellTitles, ["rss_list_failed_to_load_channel".localizedOrRandom, "rss_list_failed_to_load_channel".localizedOrRandom])
 
         // When: .didUpdateLastReadItemID event
@@ -129,8 +128,8 @@ final class RSSChannelListViewModelTests: XCTestCase {
         getRSSChannelsUseCase.getRSSChannelsResult = Mock.channels
         getRSSHistoryItemsUseCase.subject.send(.init(reason: .didUpdateLastReadItemID(historyItemID: UUID()), historyItems: Mock.historyItems))
         await effectManager.wait()
-        // Then: does nothing
-        XCTAssertEqual(sut.state.status.cellTitles, nil)
+        // Then: list shows errors which means list was refreshed and not reloaded
+        XCTAssertEqual(sut.state.status.cellTitles, ["rss_list_failed_to_load_channel".localizedOrRandom, "rss_list_failed_to_load_channel".localizedOrRandom])
     }
     
     // MARK: - reduce -

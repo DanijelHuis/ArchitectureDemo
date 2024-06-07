@@ -8,7 +8,7 @@
 import XCTest
 import Combine
 import TestUtility
-import Domain
+@testable import Domain
 @testable import Presentation
 
 final class RSSChannelDetailsViewModelTests: XCTestCase {
@@ -38,8 +38,17 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
         
         static let historyItems = [historyItem1, historyItem2]
         
-        static let item1 = RSSItem.mock(guid: "item 1 guid")
-        static let item2 = RSSItem.mock(guid: "item 2 guid")
+        static let item1 = RSSItem.mock(guid: "item 1 guid", title: "title1",
+                                        description: "description1",
+                                        link: URL(string: "link1"),
+                                        imageURL: URL(string: "image1"),
+                                        pubDate: Date(timeIntervalSince1970: 0))
+        static let item2 = RSSItem.mock(guid: "item 2 guid", title: "title2",
+                                        description: "description2",
+                                        link: URL(string: "link2"),
+                                        imageURL: URL(string: "image2"),
+                                        pubDate: Date(timeIntervalSince1970: 24 * 60 * 60))
+
         static let channel1 = RSSChannel(title: "channel1", description: "description1", imageURL: URL(string: "image1"), items: [item1, item2])
         static let channel2 = RSSChannel(title: "channel2", description: "description2", imageURL: URL(string: "image2"), items: [])
         static var updatedChannel1: RSSChannel {
@@ -54,6 +63,8 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     }
     
     @MainActor override func setUp() {
+        Container.locale = Locale(identifier: "en")
+        Container.timeZone = TimeZone(secondsFromGMT: 0)!
         resetAll()
     }
     
@@ -183,11 +194,21 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.state.title, "updated title")
         XCTAssertEqual(sut.state.status.isLoaded, true)
         switch sut.state.status {
-        case .loaded(let cellStates):
-            // Just testing that it mapped new cell states, not testing everything because it is tested in RSSChannelItemListCellStateMapperTests.
-            XCTAssertEqual(cellStates.count, 2)
-            XCTAssertEqual(cellStates[0].title, "updated item 1 title")
-            XCTAssertEqual(cellStates[1].title, "updated item 2 title")
+        case .loaded(let items):
+            XCTAssertEqual(items.count, 2)
+            XCTAssertEqual(items.first?.id, "item 1 guid")
+            XCTAssertEqual(items.first?.title, "updated item 1 title")
+            XCTAssertEqual(items.first?.description, "description1")
+            XCTAssertEqual(items.first?.imageURL?.absoluteString, "image1")
+            XCTAssertEqual(items.first?.link?.absoluteString, "link1")
+            XCTAssertEqual(items.first?.publishDate, "January 1, 1970 at 12:00 AM")
+            
+            XCTAssertEqual(items.last?.id, "item 2 guid")
+            XCTAssertEqual(items.last?.title, "updated item 2 title")
+            XCTAssertEqual(items.last?.description, "description2")
+            XCTAssertEqual(items.last?.imageURL?.absoluteString, "image2")
+            XCTAssertEqual(items.last?.link?.absoluteString, "link2")
+            XCTAssertEqual(items.last?.publishDate, "January 2, 1970 at 12:00 AM")
 
         default:
             XCTFail("Invalid status")

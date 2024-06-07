@@ -8,6 +8,7 @@
 import Foundation
 import Foundation
 import SwiftUI
+import Domain
 import Kingfisher
 
 @MainActor public struct RSSChannelItemListCell: View {
@@ -55,13 +56,16 @@ import Kingfisher
     }
 }
 
+// This is tested in RSSChannelDetailsViewModelTests.
 extension RSSChannelItemListCell {
     public struct State: Identifiable, Equatable {
-        public let id: String
-        let link: URL?   // Not part of the view but we use it as ID
-        let title: String?
-        let publishDate: String?
-        let description: String?
-        let imageURL: URL?
+        // Data
+        var rssItem: RSSItem
+        public var id: String { rssItem.guid ?? UUID().uuidString }
+        var link: URL? { rssItem.link }
+        var title: String? { rssItem.title }
+        var publishDate: String? { rssItem.pubDate.map { TimeFormatter().string(from: $0) } }
+        var description: String? { rssItem.description }
+        var imageURL: URL? { rssItem.imageURL }
     }
 }

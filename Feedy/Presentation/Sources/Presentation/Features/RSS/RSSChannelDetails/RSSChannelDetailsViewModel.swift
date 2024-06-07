@@ -19,25 +19,16 @@ import Localization
     private let coordinator: Coordinator
     public let effectManager: SideEffectManager
     @Published public private(set) var state: State
-    // Private
-    // rssHistoryItem and rssChannel objects are not part of the view state so we keep them here. View state should have only
-    // formatted data that is needed for presenting the view. This is not ideal as this data and view formatted data can get de-synced
-    // if not careful. I don't consider this huge problem as data like this could also be stored in cache, datasource, reactive stream or something else, that
-    // means that de-sync is always possible. Our only source of truth here is the view state.
-    private var rssHistoryItem: RSSHistoryItem
-    private var rssChannel: RSSChannel
-    private var cancellables: Set<AnyCancellable> = []
 
+    private var cancellables: Set<AnyCancellable> = []
     public init(rssHistoryItem: RSSHistoryItem, rssChannel: RSSChannel, getRSSHistoryItemsUseCase: GetRSSHistoryItemsUseCase, getRSSChannelUseCase: GetRSSChannelUseCase, changeHistoryItemFavouriteStatusUseCase: ChangeHistoryItemFavouriteStatusUseCase, updateLastReadItemIDUseCase: UpdateLastReadItemIDUseCase, effectManager: SideEffectManager, coordinator: Coordinator) {
-        self.rssHistoryItem = rssHistoryItem
-        self.rssChannel = rssChannel
         self.getRSSHistoryItemsUseCase = getRSSHistoryItemsUseCase
         self.getRSSChannelUseCase = getRSSChannelUseCase
         self.changeHistoryItemFavouriteStatusUseCase = changeHistoryItemFavouriteStatusUseCase
         self.updateLastReadItemIDUseCase = updateLastReadItemIDUseCase
         self.effectManager = effectManager
         self.coordinator = coordinator
-        self.state = .init(title: rssChannel.title, isFavourite: rssHistoryItem.isFavourite)
+        self.state = .init(rssHistoryItem: rssHistoryItem, rssChannel: rssChannel)
         observeEnvironment()
     }
     
@@ -46,10 +37,8 @@ import Localization
         getRSSHistoryItemsUseCase.output.sink { [weak self] event in
             guard let self else { return }
             // We can just update on every change, no need to check reason or item id.
-            guard let historyItem = event.historyItems.first(where: { $0.id == self.rssHistoryItem.id }) else { return }
-            self.rssHistoryItem = historyItem
-            // View state (isFavourite) should be set from the view model rather than having it computed inside state from the history item.
-            self.state.isFavourite = historyItem.isFavourite
+            guard let historyItem = event.historyItems.first(where: { $0.id == self.state.rssHistoryItem.id }) else { return }
+            self.state.rssHistoryItem = historyItem
         }.store(in: &cancellables)
     }
     
@@ -62,8 +51,8 @@ import Localization
             loadRSSChannel(showLoading: false)
             
         case .toggleFavourites:
-            let isFavourite = !self.rssHistoryItem.isFavourite
-            try? self.changeHistoryItemFavouriteStatusUseCase.changeFavouriteStatus(historyItemID: self.rssHistoryItem.id, isFavourite: isFavourite)
+            let isFavourite = !self.state.rssHistoryItem.isFavourite
+            try? self.changeHistoryItemFavouriteStatusUseCase.changeFavouriteStatus(historyItemID: self.state.rssHistoryItem.id, isFavourite: isFavourite)
                 
         case .didTapOnRSSItem(let link):
             guard let link else { return }
@@ -74,22 +63,14 @@ import Localization
     private func loadRSSChannel(showLoading: Bool) {
         effectManager.run {
             if showLoading {
-                self.state.status = .loading()
+                self.state.isLoading = true
             }
             
             // Ignoring error intentionally, we already have channel loaded so if it fails just show old one.
-            self.rssChannel = (try? await self.getRSSChannelUseCase.getRSSChannel(url: self.rssHistoryItem.channelURL)) ?? self.rssChannel
-            // Updates title
-            self.state.title = self.rssChannel.title
+            self.state.rssChannel = (try? await self.getRSSChannelUseCase.getRSSChannel(url: self.state.rssHistoryItem.channelURL)) ?? self.state.rssChannel
             // Updagin last read item here
-            self.updateLastReadItemID(historyItemID: self.rssHistoryItem.id, channel: self.rssChannel)
-            // For simplicity, mapper is not injected.
-            let cellStates = RSSChannelItemListCellStateMapper().map(rssItems: self.rssChannel.items)
-            if !cellStates.isEmpty {
-                self.state.status = .loaded(states: cellStates)
-            } else {
-                self.state.status = .empty()
-            }
+            self.updateLastReadItemID(historyItemID: self.state.rssHistoryItem.id, channel: self.state.rssChannel)
+            self.state.isLoading = false
         }
     }
     
@@ -106,16 +87,31 @@ import Localization
 
 extension RSSChannelDetailsViewModel {
     public struct State: Equatable {
-        // View
-        // IMPORTANT: these properties could be computed (from the data values) but we want state to be dumb, otherwise we would have to format and do everything else, better keep that logic in the view model.
-        var title: String?
-        var isFavourite: Bool
-        var status: ViewStatus
+        // Data state
+        var rssHistoryItem: RSSHistoryItem
+        var rssChannel: RSSChannel
+        var isLoading: Bool = true
         
-        public init(title: String? = nil, isFavourite: Bool = false, status: ViewStatus = .loading()) {
-            self.title = title
-            self.isFavourite = isFavourite
-            self.status = status
+        public init(rssHistoryItem: RSSHistoryItem, rssChannel: RSSChannel) {
+            self.rssHistoryItem = rssHistoryItem
+            self.rssChannel = rssChannel
+        }
+        
+        // View state
+        var title: String? { rssChannel.title }
+        var isFavourite: Bool { rssHistoryItem.isFavourite }
+        var items: [RSSChannelItemListCell.State] {
+            rssChannel.items.map({ RSSChannelItemListCell.State(rssItem: $0) })
+        }
+        
+        var status: ViewStatus {
+            if isLoading {
+                return .loading()
+            } else if items.isEmpty {
+                return .empty()
+            } else {
+                return .loaded(states: items)
+            }
         }
     }
     
