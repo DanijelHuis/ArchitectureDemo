@@ -1,8 +1,13 @@
-This demo is meant to accompany my CV and provide insight into my code and how I structure apps. Demo app uses clean architecture for model, for UI I used MVI but I will add MVVM and TCA. In the text below I explain everything in more detail.
+This demo is meant to accompany my CV and provide insight into my code and how I structure apps. 
+
+Demo app uses clean architecture for model part. UI architecture is done in 3 ways:
+- MVVM (Model-View-ViewModel) [NOT YET IMPLEMENTED]
+- MVI (Model-View-Intent) 
+- TCA (The Composable Architecture) [NOT YET IMPLEMENTED]
 
 The app is a simple RSS reader, it allows users to add RSS feeds and view their contents. It also allows for adding favorites.
 
-## MVI (Model-View-Intent)
+## MVI
 My version of Intent is basically a view model that is adapted for state, action and unidirectional flow. Note that I use view model naming in the demo app because it is more familiar to iOS world. We used this architecture on our last project and it worked very well. Key points are:
 - instead of separate reactive properties, view model has one reactive state.
 - instead of multiple functions, view model has only one send(action) function which takes action enum.
@@ -10,7 +15,7 @@ My version of Intent is basically a view model that is adapted for state, action
 - view cannot change state directly, it can send actions (intents) and listen to changes in state. This makes the app easier to reason with and more predictable.
 - view knows only about state and action, it doesn't need to know concrete view model. This makes it easy to make previews and snapshot tests.
 
-This architecture has some similarities with The Composable Architecture (TCA) and Redux - it has state and action and it is unidirectional. On the other hand it is very different - it doesn't allow scoping and composing states/reducers and it doesn't have a single state for the whole app. Also, MVI is not as predictable as those architectures, state can be changed from anywhere in the view model (compared to state being mutated only by reduce function in TCA/Redux). There is no separation between store and reducer, view model acts as both.
+This architecture has some similarities with The Composable Architecture (TCA) and Redux/Elm/Flux - it has state and action and it is unidirectional. On the other hand it is very different - it doesn't allow scoping and composing states/reducers and it doesn't have single state for the whole app. Also, MVI is not as predictable as TCA, state can be changed from anywhere in the view model (compared to state being mutated only by reduce function in TCA). Also, there is no separation between store and reducer, view model acts as both.
 
 ## Clean architecture & modularization
 I've split the demo app into four layers: infrastructure, domain, data, and presentation. The goals are:
