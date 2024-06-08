@@ -6,7 +6,7 @@ The app is a simple RSS reader, it allows users to add RSS feeds and view their 
 
 ## MVVM vs. MVI vs. TCA
 I've summarized all the differences between architectures and put it into table below. Note that this focuses on UI sides of these architecutres.
-![architecture_comparison](https://github.com/DanijelHuis/ArchitectureDemo/assets/5382135/49c3b55c-546f-414c-b8f9-e70611da80df)
+![architecture_comparison](https://github.com/DanijelHuis/ArchitectureDemo/assets/5382135/3562f072-14a8-422a-921a-7a93f60f9bd0)
 
 ## Clean architecture & modularization
 I've split the demo app into four layers: infrastructure, domain, data, and presentation. The goals are:
