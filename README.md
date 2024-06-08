@@ -1,25 +1,12 @@
-This demo is meant to accompany my CV and provide insight into my code and how I structure apps. 
+This demo is meant to accompany my CV and provide insight into my code and how I structure and test apps. 
 
-Demo app uses clean architecture for model part. UI architecture is done in 3 ways:
-- MVVM (Model-View-ViewModel) [NOT YET IMPLEMENTED]
-- MVI (Model-View-Intent) 
-- TCA (The Composable Architecture) [NOT YET IMPLEMENTED]
+Demo app uses clean architecture for model part. For UI part, same code is implemented in MVVM, MVI and TCA architectures, that way we can compare implementations.
 
 The app is a simple RSS reader, it allows users to add RSS feeds and view their contents. It also allows for adding favorites.
 
-## MVI
-My version of Intent is basically a view model that is adapted for state, action and unidirectional flow. Note that I use view model naming in the demo app because it is more familiar to iOS world. We used this architecture on our last project and it worked very well. Key points are:
-- intent in MVI is defined by one state property and one function that takes action (enum) as parameter.
-- view is a reflection of a state. 
-- view cannot change state directly, it can send actions (intents) and listen to changes in state. This makes the app easier to reason with and more predictable.
-- view knows only about state and action, it doesn't need to know concrete view model. This makes it easy to make previews and snapshot tests.
-
 ## MVVM vs. MVI vs. TCA
-MVVM doesn't have state and action, it has separate properties and functions, it is not unidirectional (e.g. two way data binding with RxSwift) and has much less rules and opinions than TCA. This makes it simpler but much less predictable. It is easier to make previews and snapshot tests in MVI/TCA because view knows only about State and Action (send function). In MVVM we either have to inject concrete view model into view, or make protocol for every view model. Also, MVVM is not composable, we cannot connect parent and children components as easily as in TCA.
-
-MVI has some similarities with TCA and Redux/Elm/Flux - it has state and action and it is unidirectional. On the other hand it is very different - it doesn't allow scoping and composing states/reducers and it doesn't have single state for the whole app. Also, MVI is not as predictable as TCA, state can be changed from anywhere in the view model (compared to state being mutated only by reduce function in TCA). MVI doesn't separate between store and reducer, view model acts as both.
-
-What makes TCA great is the composability of children and parent components, no other architecture has built-in way to deal with this. E.g. if we have complex feature we can separate it into multiple components in a way that they all act on single piece of state, so when child changes, parent is also guaranteed to change. Parent can receive actions from child and parent can mutate child's state.
+I've summarized all the differences between architectures and put it into table below. Note that this focuses on UI sides of these architecutres.
+![architecture_comparison](https://github.com/DanijelHuis/ArchitectureDemo/assets/5382135/49c3b55c-546f-414c-b8f9-e70611da80df)
 
 ## Clean architecture & modularization
 I've split the demo app into four layers: infrastructure, domain, data, and presentation. The goals are:
