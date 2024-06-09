@@ -15,8 +15,8 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../Domain"),
+        .package(path: "../CommonUI"),
         .package(path: "../Infrastructure/TestUtility"),
-        .package(path: "../Infrastructure/Localization"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.16.0"),
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "7.11.0")
     ],
@@ -27,16 +27,18 @@ let package = Package(
             name: "Presentation",
             dependencies: [
                 "Domain",
+                "CommonUI",
                 "Kingfisher"
             ]
         ),
         .testTarget(
             name: "PresentationTests",
-            dependencies: ["Presentation", "TestUtility", "Localization"]),
+            dependencies: ["Presentation", "CommonUI", "TestUtility"]),
         .testTarget(
             name: "PresentationSnapshotTests",
             dependencies: [
                 "Presentation",
+                "CommonUI",
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
             ])
     ]

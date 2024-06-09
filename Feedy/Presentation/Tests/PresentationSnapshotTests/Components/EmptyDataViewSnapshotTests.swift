@@ -8,7 +8,7 @@
 import XCTest
 import SnapshotTesting
 import SwiftUI
-@testable import Presentation
+@testable import CommonUI
 
 final class EmptyDataViewSnapshotTests: XCTestCase {
     @MainActor func test_emptyDataView() throws {

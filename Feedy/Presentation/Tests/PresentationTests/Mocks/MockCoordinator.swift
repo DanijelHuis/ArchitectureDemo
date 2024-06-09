@@ -8,10 +8,11 @@
 import Foundation
 import Presentation
 import TestUtility
+import CommonUI
 
 final class MockCoordinator: Coordinator {
     var openRouteCalls = [AppRoute]()
-    func openRoute(_ route: Presentation.AppRoute) {
+    func openRoute(_ route: AppRoute) {
         openRouteCalls.append(route)
     }    
 }

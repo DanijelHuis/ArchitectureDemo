@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CommonUI
 
 @MainActor public struct RSSChannelListView: View {
     @ObservedObject private var viewModel: ObservableSwiftUIViewModelOf<RSSChannelListViewModel>
@@ -16,7 +17,7 @@ import SwiftUI
     
     public var body: some View {
         ZStack(alignment: .top) {
-            Color(.background2).edgesIgnoringSafeArea(.all)
+            Color.background2.edgesIgnoringSafeArea(.all)
             
             switch viewModel.state.status {
                 

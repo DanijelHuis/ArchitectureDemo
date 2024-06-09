@@ -8,8 +8,8 @@
 import Foundation
 import Combine
 import Domain
-import Localization
 import SwiftUI
+import CommonUI
 
 @MainActor public final class RSSChannelListViewModel: SwiftUIViewModel {
     // Dependencies

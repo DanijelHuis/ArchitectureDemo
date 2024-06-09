@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import CommonUI
 
 @MainActor public struct RSSChannelListCell: View {
     private let state: State
@@ -51,7 +52,7 @@ import SwiftUI
             VStack(spacing: .spacing.normal) {
                 if state.isFavourite {
                     Image(systemName: "star.fill")
-                        .foregroundStyle(Color(.foreground1))
+                        .foregroundStyle(Color.foreground1)
                         .textStyle(Style.Text.heading4)
                 }
             }

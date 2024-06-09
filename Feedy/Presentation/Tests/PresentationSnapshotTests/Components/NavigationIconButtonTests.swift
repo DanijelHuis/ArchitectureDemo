@@ -8,7 +8,7 @@
 import XCTest
 import SnapshotTesting
 import SwiftUI
-@testable import Presentation
+@testable import CommonUI
 
 final class NavigationIconButtonTests: XCTestCase {
     @MainActor func test_navigationIconButton() throws {

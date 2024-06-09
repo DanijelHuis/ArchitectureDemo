@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CommonUI
 
 @MainActor public struct AddRSSChannelView: View {
     @ObservedObject private var viewModel: ObservableSwiftUIViewModelOf<AddRSSChannelViewModel>
@@ -18,7 +19,7 @@ import SwiftUI
     
     public var body: some View {
         ZStack(alignment: .topLeading) {
-            Color(.background2).edgesIgnoringSafeArea(.all)
+            Color.background2.edgesIgnoringSafeArea(.all)
             
             VStack(spacing: .spacing.stackView) {
                 // Top padding
@@ -54,6 +55,22 @@ import SwiftUI
                 }
                 .buttonStyle(Style.Button.action)
                 .accessibilityIdentifier("add_button")
+                
+                // @TODO just for testing
+                /*VStack {
+                    Button("Sky news") {
+                        viewModel.send(.didChangeChannelURLText("https://feeds.skynews.com/feeds/rss/world.xml"))
+                    }
+                    Button("BBC") {
+                        viewModel.send(.didChangeChannelURLText("https://feeds.bbci.co.uk/news/world/rss.xml"))
+                    }
+                    Button("Bug.hr") {
+                        viewModel.send(.didChangeChannelURLText("https://bug.hr/rss"))
+                    }
+                    Button("Index.hr") {
+                        viewModel.send(.didChangeChannelURLText("https://index.hr/rss"))
+                    }
+                }*/
             }
             .padding(.spacing.quad)
             .disabled(viewModel.state.status == .validating)

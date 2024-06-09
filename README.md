@@ -9,7 +9,7 @@ I've summarized all the differences between architectures and put it into table 
 ![architecture_comparison](https://github.com/DanijelHuis/ArchitectureDemo/assets/5382135/3562f072-14a8-422a-921a-7a93f60f9bd0)
 
 ## Clean architecture & modularization
-I've split the demo app into four layers: infrastructure, domain, data, and presentation. The goals are:
+I've split the demo app into multiple layers: infrastructure, domain, data, and presentation. The goals are:
 - to restrict dependencies between layers. Lower layers (e.g. domain) shouldn't know anything about higher layers (e.g. presentation).
 - define entities and protocols in domain layer and use only those in the app, that way app is far less susceptible to changes in the outside world.
 - we define use cases to simplify logic, so we can inject only protocols that are needed (interface segregation).

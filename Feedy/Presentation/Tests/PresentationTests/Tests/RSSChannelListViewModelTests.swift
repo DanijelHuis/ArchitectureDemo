@@ -106,7 +106,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         await effectManager.wait()
         // Then: reloads channels
         XCTAssertEqual(sut.state.status.cellTitles, ["channel1", "channel2"])
-
+        
         // When: .remove event
         resetAll()
         getRSSChannelsUseCase.getRSSChannelsResult = Mock.channels
@@ -114,7 +114,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         await effectManager.wait()
         // Then: list shows errors which means list was refreshed and not reloaded
         XCTAssertEqual(sut.state.status.cellTitles, ["rss_list_failed_to_load_channel".localizedOrRandom, "rss_list_failed_to_load_channel".localizedOrRandom])
-
+        
         // When: .favouriteStatusUpdated event
         resetAll()
         getRSSChannelsUseCase.getRSSChannelsResult = Mock.channels
@@ -122,7 +122,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         await effectManager.wait()
         // Then: list shows errors which means list was refreshed and not reloaded
         XCTAssertEqual(sut.state.status.cellTitles, ["rss_list_failed_to_load_channel".localizedOrRandom, "rss_list_failed_to_load_channel".localizedOrRandom])
-
+        
         // When: .didUpdateLastReadItemID event
         resetAll()
         getRSSChannelsUseCase.getRSSChannelsResult = Mock.channels
@@ -322,6 +322,20 @@ final class RSSChannelListViewModelTests: XCTestCase {
         // Then
         XCTAssertEqual(sut.state.status, .empty(text: "rss_list_no_favourites".localizedOrRandom))
     }
+    
+    // MARK: - Other -
+    
+    @MainActor func test_reloadRSSChannels_showsLoading() async throws {
+        // When: .update event will call reloadRSSChannels
+        getRSSChannelsUseCase.getRSSChannelsResult = Mock.channels
+        getRSSHistoryItemsUseCase.subject.send(RSSHistoryEvent(reason: .update, historyItems: Mock.historyItems))
+        await effectManager.wait()
+        // Then: Set states correctly
+        XCTAssertEqual(stateCalls[0].status.isLoaded, true) // Called when historyItems is set
+        XCTAssertEqual(stateCalls[1].status, .loading(text: "common_loading".localizedOrRandom))    // When isLoading is set to true
+        XCTAssertEqual(stateCalls[2].status, .loading(text: "common_loading".localizedOrRandom))    // When channels are loaded but isLoading is still true
+        XCTAssertEqual(stateCalls[3].status.isLoaded, true) // When isLoading is set to false
+    }
 }
 
 private extension RSSChannelListViewModel.ViewStatus {
@@ -336,11 +350,10 @@ private extension RSSChannelListViewModel.ViewStatus {
     
     var cellTitles: [String]? {
         switch self {
-        case .empty(let text): nil
-        case .loading(let text): nil
-        case .loaded(let states): 
-            states.map({ $0.title })
-        case .error(let text): nil
+        case .empty: nil
+        case .loading: nil
+        case .loaded(let states): states.map({ $0.title })
+        case .error: nil
         }
     }
 }

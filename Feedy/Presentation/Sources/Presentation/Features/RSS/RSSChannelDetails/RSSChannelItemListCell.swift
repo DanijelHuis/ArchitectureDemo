@@ -10,6 +10,7 @@ import Foundation
 import SwiftUI
 import Domain
 import Kingfisher
+import CommonUI
 
 @MainActor public struct RSSChannelItemListCell: View {
     private let state: State
@@ -64,7 +65,7 @@ extension RSSChannelItemListCell {
         public var id: String { rssItem.guid ?? UUID().uuidString }
         var link: URL? { rssItem.link }
         var title: String? { rssItem.title }
-        var publishDate: String? { rssItem.pubDate.map { TimeFormatter().string(from: $0) } }
+        var publishDate: String? { rssItem.pubDate.map { TimeFormatter(locale: Container.locale, timeZone: Container.timeZone).string(from: $0) } }
         var description: String? { rssItem.description }
         var imageURL: URL? { rssItem.imageURL }
     }

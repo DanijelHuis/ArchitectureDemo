@@ -48,7 +48,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
                                         link: URL(string: "link2"),
                                         imageURL: URL(string: "image2"),
                                         pubDate: Date(timeIntervalSince1970: 24 * 60 * 60))
-
+        
         static let channel1 = RSSChannel(title: "channel1", description: "description1", imageURL: URL(string: "image1"), items: [item1, item2])
         static let channel2 = RSSChannel(title: "channel2", description: "description2", imageURL: URL(string: "image2"), items: [])
         static var updatedChannel1: RSSChannel {
@@ -142,7 +142,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
         // When
         await sut.sendAsync(.onFirstAppear)
         // Then: sets loading
-        XCTAssertEqual(stateCalls.map({ $0.status.isLoading }).contains(true), true)
+        XCTAssertEqual(stateCalls.map({ $0.status }).contains(.loading(text: "common_loading".localizedOrRandom)), true)
         // Then: checking that it loaded new channel and set it up, other stuff is tested elsewhere
         XCTAssertEqual(sut.state.title, Mock.updatedChannel1.title)
     }
@@ -157,7 +157,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
         // When
         await sut.sendAsync(.didInitiateRefresh)
         // Then: doesn't set loading
-        XCTAssertEqual(stateCalls.map({ $0.status.isLoading }).contains(true), false)
+        XCTAssertEqual(stateCalls.map({ $0.status }).contains(.loading(text: "common_loading".localizedOrRandom)), false)
         // Then: checking that it loaded new channel and set it up, other stuff is tested elsewhere
         XCTAssertEqual(sut.state.title, Mock.updatedChannel1.title)
     }
@@ -209,7 +209,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
             XCTAssertEqual(items.last?.imageURL?.absoluteString, "image2")
             XCTAssertEqual(items.last?.link?.absoluteString, "link2")
             XCTAssertEqual(items.last?.publishDate, "January 2, 1970 at 12:00 AM")
-
+            
         default:
             XCTFail("Invalid status")
         }
@@ -246,14 +246,6 @@ private extension RSSChannelDetailsViewModel.ViewStatus {
         case .empty: false
         case .loading: false
         case .loaded: true
-        }
-    }
-    
-    var isLoading: Bool {
-        switch self {
-        case .empty: false
-        case .loading: true
-        case .loaded: false
         }
     }
 }
