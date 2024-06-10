@@ -64,7 +64,6 @@ final class RSSManagerTests: XCTestCase {
         rssRepository.getRSSChannelsCalls.removeAll()
     }
     
-    
     // MARK: - getRSSHistoryItems -
     
     func test_getRSSChannels_givenSuccess_thenEmitsCorrectChannels() async throws {
@@ -78,6 +77,24 @@ final class RSSManagerTests: XCTestCase {
         XCTAssertEqual(rssRepository.getRSSChannelsCalls.count, 1)
         // Then: outputs correct channels
         XCTAssertEqual(outputCalls, [Mock.channels])
+    }
+    
+    func test_getRSSChannels_givenSuccess_givenSomeItemsMissing_thenReturnsNilResultForMissingItems() async throws {
+        // Given
+        try await loadInitialChannels()
+        historyRepository.getRSSHistoryItemsResult = .success(Mock.items)
+        rssRepository.getRSSChannelsResult = [Mock.item3.id: .success(Mock.channel3)];
+        // When
+        try await sut.getRSSChannels()
+        // Then: Reloads channels
+        XCTAssertEqual(rssRepository.getRSSChannelsCalls.count, 1)
+        // Then: outputs correct channels
+        XCTAssertEqual(outputCalls, [[
+            RSSChannelResponse(historyItem: Mock.item1, channel: nil),
+            RSSChannelResponse(historyItem: Mock.item2, channel: nil),
+            RSSChannelResponse(historyItem: Mock.item3, channel: .success(Mock.channel3))
+        ]]
+        )
     }
     
     func test_getRSSChannels_givenFailure_thenThrows() async throws {
@@ -108,10 +125,11 @@ final class RSSManagerTests: XCTestCase {
         XCTAssertEqual(outputCalls, [Mock.channels])
     }
     
-    func test_addRSSHistoryItem_givenHistoryRepositoryFailure_thenThrows() async throws {
+    func test_addRSSHistoryItem_givenFailure_thenThrows() async throws {
         // Given
         try await loadInitialChannels()
         historyRepository.addRSSHistoryItemResult = .failure(Mock.error)
+        rssRepository.getRSSChannelsResult = Mock.channelsResponse;
         // Then
         await XCTAssertError(Mock.error) {
             // When
@@ -142,6 +160,7 @@ final class RSSManagerTests: XCTestCase {
         // Given
         let uuid = UUID()
         historyRepository.removeRSSHistoryItemResult = .failure(Mock.error)
+        rssRepository.getRSSChannelsResult = Mock.channelsResponse;
         // Then
         await XCTAssertError(Mock.error) {
             // When
@@ -157,6 +176,7 @@ final class RSSManagerTests: XCTestCase {
         let item = Mock.item2
         historyRepository.getRSSHistoryItemResult = .success(item)
         historyRepository.updateRSSHistoryItemResult = .success(Mock.items)
+        rssRepository.getRSSChannelsResult = Mock.channelsResponse;
         // When
         try await sut.changeFavouriteStatus(historyItemID: item.id, isFavourite: true)
         // Then: request correct item

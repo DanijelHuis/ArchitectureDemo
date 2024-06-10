@@ -43,9 +43,11 @@ import CommonUI
                 }
 
             // Error
-            case .error(let text):
-                ErrorView(text: text)
-                    .frame(maxHeight: .infinity)
+            case .error(let text, let retryText):
+                ErrorView(text: text, retryText: retryText) {
+                    viewModel.send(.didTapRetry)
+                }
+                .frame(maxHeight: .infinity)
             }
         }
         .navigationTitle(viewModel.state.title)

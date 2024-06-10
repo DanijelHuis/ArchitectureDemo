@@ -16,3 +16,7 @@ public struct RSSChannelResponse: Equatable {
         self.channel = channel
     }
 }
+
+public enum RSSChannelError: Error {
+    case failedToLoad
+}

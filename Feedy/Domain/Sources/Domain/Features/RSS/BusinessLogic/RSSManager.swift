@@ -13,29 +13,33 @@ public class RSSManager: GetRSSChannelsUseCase, AddRSSHistoryItemUseCase, Remove
     private let historyRepository: RSSHistoryRepository
     private let rssRepository: RSSRepository
     private let subject = PassthroughSubject<[RSSChannelResponse], Never>()
-    private var channelsCache = [UUID: Result<RSSChannel, RSSChannelError>]()
+    @MainActor private var channelsCache = [UUID: Result<RSSChannel, RSSChannelError>]()
     public var output: AnyPublisher<[RSSChannelResponse], Never> { subject.eraseToAnyPublisher() }
     
     public init(historyRepository: RSSHistoryRepository, rssRepository: RSSRepository) {
         self.historyRepository = historyRepository
         self.rssRepository = rssRepository
     }
-    
+        
+    /// Loads history items and fetches RSS channels.
     public func getRSSChannels() async throws {
         let historyItems = try historyRepository.getRSSHistoryItems()
         await getChannels(historyItems: historyItems ?? [], reload: true)
     }
     
+    /// Adds history item and fetches RSS channels for all items.
     public func addRSSHistoryItem(channelURL: URL) async throws {
         let historyItems = try historyRepository.addRSSHistoryItem(.init(id: UUID(), channelURL: channelURL))
         await getChannels(historyItems: historyItems, reload: true)
     }
     
+    /// Removes history item, doesn't fetch RSS channels.
     public func removeRSSHistoryItem(_ historyItemID: UUID) async throws {
         let historyItems = try historyRepository.removeRSSHistoryItem(historyItemID: historyItemID)
         await getChannels(historyItems: historyItems, reload: false)
     }
     
+    /// Replaces history item, doesn't fetch RSS channels.
     public func changeFavouriteStatus(historyItemID: UUID, isFavourite: Bool) async throws {
         var historyItem = try historyRepository.getRSSHistoryItem(id: historyItemID)
         historyItem.isFavourite = isFavourite

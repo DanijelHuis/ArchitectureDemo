@@ -24,7 +24,7 @@ public final class Navigator: ObservableObject {
         path.removeLast()
     }
     
-    /// Presents controller on top presented controller on root. Not ideal but there is no nice way of preseting in SwiftUI without coupling .sheet or .popover inside view hierarchy.
+    /// Presents controller on top presented controller on root. Not ideal but there is no nice way of presenting in SwiftUI without coupling .sheet or .popover inside view hierarchy.
     public func present(_ route: AppRoute, controller: UIViewController, animated: Bool) {
         UIApplication.shared.topPresentedViewController?.present(controller, animated: animated)
     }
@@ -49,6 +49,7 @@ extension AppRoute {
     var id: String { String(describing: self) }
 }
 
+// MARK: - Support -
 
 private extension UIApplication {
     var topPresentedViewController: UIViewController? {

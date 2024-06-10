@@ -7,7 +7,7 @@
 
 import Foundation
 
-// Sorts by putting nil at the end.
+// Sorts desscending by putting nil at the end.
 infix operator >>> : DefaultPrecedence
 public func >>> <T: Comparable>(lhs: T?, rhs: T?) -> Bool {
     switch (lhs, rhs) {
@@ -17,7 +17,7 @@ public func >>> <T: Comparable>(lhs: T?, rhs: T?) -> Bool {
     }
 }
 
-// Sorts by putting nil at the end.
+// Sorts ascending by putting nil at the end.
 infix operator <<< : DefaultPrecedence
 public func <<< <T: Comparable>(lhs: T?, rhs: T?) -> Bool {
     switch (lhs, rhs) {

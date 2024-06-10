@@ -38,7 +38,7 @@ import CommonUI
     
     public func send(_ action: Action) {
         switch action {
-        case .onFirstAppear:
+        case .onFirstAppear, .didTapRetry:
             effectManager.run {
                 await self.getChannels(showLoading: true)
             }
@@ -67,9 +67,7 @@ import CommonUI
     }
         
     private func getChannels(showLoading: Bool) async {
-        if showLoading {
-            state.isLoading = true
-        }
+        if showLoading { state.isLoading = true }
         defer { state.isLoading = false }
         
         do {
@@ -121,12 +119,13 @@ extension RSSChannelListViewModel {
         case empty(text: String)
         case loading(text: String = "common_loading".localized)
         case loaded(states: [RSSChannelListCell.State])
-        case error(text: String = "rss_list_channel_failure".localized)
+        case error(text: String = "rss_list_channel_failure".localized, retryText: String = "common_retry".localized)
     }
     
     public enum Action: Equatable {
         case onFirstAppear
         case didTapAddChannelButton
+        case didTapRetry
         case didTapRemoveHistoryItem(_ id: UUID)
         case didInitiateRefresh
         case didSelectItem(_ historyItemID: UUID)

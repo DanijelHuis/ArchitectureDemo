@@ -19,8 +19,8 @@ final class ErrorViewSnapshotTests: XCTestCase {
 private struct ContainerView: View {
     var body: some View {
         VStack(spacing: 20) {
-            ErrorView(text: .loremIpsumShort)
-            ErrorView(text: .loremIpsumMedium)
+            ErrorView(text: .loremIpsumShort, retryText: .loremIpsumVeryShort) {}
+            ErrorView(text: .loremIpsumMedium, retryText: .loremIpsumVeryShort) {}
         }
     }
 }

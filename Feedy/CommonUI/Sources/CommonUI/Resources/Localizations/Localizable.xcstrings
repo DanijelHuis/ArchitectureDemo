@@ -12,6 +12,17 @@
         }
       }
     },
+    "common_retry" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
+          }
+        }
+      }
+    },
     "rss_add_button" : {
       "extractionState" : "manual",
       "localizations" : {

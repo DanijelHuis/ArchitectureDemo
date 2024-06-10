@@ -11,9 +11,13 @@ import SwiftUI
 /// Styled view with icon, error text and try again button.
 public struct ErrorView: View {
     private let text: String
+    private let retryText: String
+    private let onRetry: () -> Void
     
-    public init(text: String) {
+    public init(text: String, retryText: String, onRetry: @escaping () -> Void) {
         self.text = text
+        self.retryText = retryText
+        self.onRetry = onRetry
     }
     
     public var body: some View {
@@ -26,6 +30,11 @@ public struct ErrorView: View {
             Text(text)
                 .multilineTextAlignment(.center)
                 .textStyle(Style.Text.body1)
+            
+            Button(retryText) {
+                onRetry()
+            }
+            .buttonStyle(Style.Button.action)
         }
         .padding(.horizontal, .spacing.view)
     }
@@ -33,8 +42,7 @@ public struct ErrorView: View {
 
 #Preview {
     VStack(spacing: 20) {
-        ErrorView(text: "short")
-        ErrorView(text: "long long long long long long long text. Error occurred, please try again...")
+        ErrorView(text: "short", retryText: "retry") {}
+        ErrorView(text: "long long long long long long long text. Error occurred, please try again...", retryText: "retry") {}
     }
 }
-

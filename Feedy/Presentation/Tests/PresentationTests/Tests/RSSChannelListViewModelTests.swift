@@ -103,6 +103,16 @@ final class RSSChannelListViewModelTests: XCTestCase {
         XCTAssertEqual(sut.state.status.cellTitles, ["channel1", "channel2"])
     }
     
+    @MainActor func test_didTapRetry_thenSetsLoadingState_thenLoadsItems() async throws {
+        // Given
+        getRSSChannelsUseCase.channelsToEmit = Mock.channelsResponses
+        // When
+        await sut.sendAsync(.didTapRetry)
+        // Then
+        XCTAssertEqual(stateCalls.map({ $0.status }).contains(.loading(text: "common_loading".localizedOrRandom)), true)
+        XCTAssertEqual(sut.state.status.cellTitles, ["channel1", "channel2"])
+    }
+    
     @MainActor func test_didInitiateRefresh_thenDoesntSetLoadingState_thenLoadsItems() async throws {
         // Given
         getRSSChannelsUseCase.channelsToEmit = Mock.channelsResponses
@@ -262,7 +272,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         // When
         await sut.sendAsync(.didInitiateRefresh)
         // Then
-        XCTAssertEqual(sut.state.status, .error(text: "rss_list_channel_failure".localizedOrRandom))
+        XCTAssertEqual(sut.state.status, .error(text: "rss_list_channel_failure".localizedOrRandom, retryText: "common_retry".localizedOrRandom))
     }
 }
 

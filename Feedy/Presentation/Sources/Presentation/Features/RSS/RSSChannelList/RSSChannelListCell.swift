@@ -49,6 +49,7 @@ import CommonUI
             
             Spacer()
             
+            // Favourite
             VStack(spacing: .spacing.normal) {
                 if state.isFavourite {
                     Image(systemName: "star.fill")
@@ -68,7 +69,6 @@ extension RSSChannelListCell {
         let description: String
         let imageResource: AsyncImageResource?
         let isFavourite: Bool
-
     }
 }
 

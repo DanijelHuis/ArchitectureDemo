@@ -15,7 +15,7 @@ extension View {
     /// - Parameters:
     ///   - content: The modifier to apply to the view.
     /// - Returns: The modified view.
-    @ViewBuilder public func modifier<T: View>(@ViewBuilder then content: (Self) -> T) -> some View {
+    public func modifier<T: View>(@ViewBuilder then content: (Self) -> T) -> some View {
         content(self)
     }
     

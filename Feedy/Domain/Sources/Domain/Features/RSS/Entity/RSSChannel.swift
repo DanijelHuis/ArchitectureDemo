@@ -20,7 +20,3 @@ public struct RSSChannel: Decodable, Equatable {
         self.items = items
     }
 }
-
-public enum RSSChannelError: Error {
-    case failedToLoad
-}

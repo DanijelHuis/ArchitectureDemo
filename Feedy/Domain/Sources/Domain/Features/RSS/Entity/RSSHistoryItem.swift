@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Item that is created by user and persisted. 
 public struct RSSHistoryItem: Codable, Equatable {
     public let id: UUID
     public let channelURL: URL

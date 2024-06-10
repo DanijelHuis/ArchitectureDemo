@@ -9,7 +9,7 @@ import Foundation
 import Combine
 import SwiftUI
 
-/// Base ViewModel to support MVI architecture
+/// Base ViewModel to support MVI architecture.
 @MainActor public protocol SwiftUIViewModel<State, Action>: ObservableObject {
     associatedtype State
     associatedtype Action

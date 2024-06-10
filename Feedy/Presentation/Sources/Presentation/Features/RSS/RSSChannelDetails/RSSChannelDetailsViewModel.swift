@@ -34,7 +34,6 @@ import CommonUI
         // Observing for changes in favourite state
         getRSSChannelsUseCase.output.sink { [weak self] channels in
             guard let self else { return }
-            // We can just update on every change, no need to check reason or item id.
             guard let channelResponse = channels.first(where: { $0.historyItem.id == self.state.rssHistoryItem.id }) else { return }
             self.state.rssHistoryItem = channelResponse.historyItem
         }.store(in: &cancellables)
@@ -60,14 +59,13 @@ import CommonUI
     }
     
     private func loadRSSChannel(showLoading: Bool) {
+        // Note: Might be better to add this to RSSManager so channel is updated.
         effectManager.run {
-            if showLoading {
-                self.state.isLoading = true
-            }
+            if showLoading { self.state.isLoading = true }
+            defer { self.state.isLoading = false }
             
             // Ignoring error intentionally, we already have channel loaded so if it fails just show old one.
             self.state.rssChannel = (try? await self.getRSSChannelUseCase.getRSSChannel(url: self.state.rssHistoryItem.channelURL)) ?? self.state.rssChannel
-            self.state.isLoading = false
         }
     }
 }
@@ -89,11 +87,9 @@ extension RSSChannelDetailsViewModel {
         // View state
         var title: String? { rssChannel.title }
         var isFavourite: Bool { rssHistoryItem.isFavourite }
-        var items: [RSSChannelItemListCell.State] {
-            rssChannel.items.map({ RSSChannelItemListCell.State(rssItem: $0) })
-        }
         
         var status: ViewStatus {
+            let items = rssChannel.items.map({ RSSChannelItemListCell.State(rssItem: $0) })
             if isLoading {
                 return .loading()
             } else if items.isEmpty {
