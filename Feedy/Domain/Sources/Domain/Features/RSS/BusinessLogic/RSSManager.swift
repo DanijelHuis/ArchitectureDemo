@@ -1,5 +1,5 @@
 //
-//  RSSHistoryManager.swift
+//  RSSManager.swift
 //  Feedy
 //
 //  Created by Danijel Huis on 17.05.2024..
@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 /// Provides reactive component and business logic over RSSHistoryRepository.
-public class RSSHistoryManager: GetRSSChannelsUseCase, AddRSSHistoryItemUseCase, RemoveRSSHistoryItemUseCase, ChangeHistoryItemFavouriteStatusUseCase {
+public class RSSManager: GetRSSChannelsUseCase, AddRSSHistoryItemUseCase, RemoveRSSHistoryItemUseCase, ChangeHistoryItemFavouriteStatusUseCase {
     private let historyRepository: RSSHistoryRepository
     private let rssRepository: RSSRepository
     private let subject = PassthroughSubject<[RSSChannelResponse], Never>()

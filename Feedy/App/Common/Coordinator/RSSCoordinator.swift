@@ -17,8 +17,8 @@ import CommonUI
         switch route {
             
         case .list:
-            let viewModel = RSSChannelListViewModel(getRSSChannelsUseCase: Container.sharedRSSHistoryManager,
-                                                    removeRSSHistoryItemUseCase: Container.sharedRSSHistoryManager,
+            let viewModel = RSSChannelListViewModel(getRSSChannelsUseCase: Container.sharedRSSManager,
+                                                    removeRSSHistoryItemUseCase: Container.sharedRSSManager,
                                                     effectManager: EffectManager(),
                                                     coordinator: AppCoordinator(navigator: navigator))
             
@@ -26,7 +26,7 @@ import CommonUI
             
         case .add:
             let viewModel = AddRSSChannelViewModel(validateRSSChannelUseCase: Container.validateRSSChannelUseCase,
-                                                   addRSSHistoryItemUseCase: Container.sharedRSSHistoryManager,
+                                                   addRSSHistoryItemUseCase: Container.sharedRSSManager,
                                                    effectManager: EffectManager())
             viewModel.onFinished = {
                 navigator.pop()
@@ -37,9 +37,9 @@ import CommonUI
         case .details(let rssHistoryItem, let channel):
             let viewModel = RSSChannelDetailsViewModel(rssHistoryItem: rssHistoryItem,
                                                        rssChannel: channel,
-                                                       getRSSChannelsUseCase: Container.sharedRSSHistoryManager,
+                                                       getRSSChannelsUseCase: Container.sharedRSSManager,
                                                        getRSSChannelUseCase: Container.rssRepository,
-                                                       changeHistoryItemFavouriteStatusUseCase: Container.sharedRSSHistoryManager,
+                                                       changeHistoryItemFavouriteStatusUseCase: Container.sharedRSSManager,
                                                        effectManager: EffectManager(),
                                                        coordinator: AppCoordinator(navigator: navigator))
             

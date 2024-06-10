@@ -1,5 +1,5 @@
 //
-//  RSSHistoryManagerTests.swift
+//  RSSManagerTests.swift
 //
 //
 //  Created by Danijel Huis on 20.05.2024..
@@ -10,10 +10,10 @@ import Combine
 import TestUtility
 @testable import Domain
 
-final class RSSHistoryManagerTests: XCTestCase {
+final class RSSManagerTests: XCTestCase {
     private var historyRepository: MockRSSHistoryRepository!
     private var rssRepository: MockRSSRepository!
-    private var sut: RSSHistoryManager!
+    private var sut: RSSManager!
     private var outputCalls = [[RSSChannelResponse]]()
     private var cancellables: Set<AnyCancellable> = []
     

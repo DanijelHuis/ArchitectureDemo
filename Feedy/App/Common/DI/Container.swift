@@ -32,5 +32,5 @@ struct Container {
     
     // MARK: - Shared -
     
-    static var sharedRSSHistoryManager = RSSHistoryManager(historyRepository: DefaultRSSHistoryRepository(persistenceManager: UserDefaultsPersistenceManager()), rssRepository: rssRepository)
+    static var sharedRSSManager = RSSManager(historyRepository: DefaultRSSHistoryRepository(persistenceManager: UserDefaultsPersistenceManager()), rssRepository: rssRepository)
 }
