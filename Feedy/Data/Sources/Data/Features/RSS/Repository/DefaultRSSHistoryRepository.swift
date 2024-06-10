@@ -19,7 +19,7 @@ public final class DefaultRSSHistoryRepository: RSSHistoryRepository {
         self.persistenceManager = persistenceManager
     }
     
-    /// Simply loads and returns items.
+    /// Loads and returns items.
     public func getRSSHistoryItems() throws -> [RSSHistoryItem]? {
         try persistenceManager.load(key: Constants.channelsPersistenceKey, type: [RSSHistoryItem].self)
     }
@@ -30,7 +30,7 @@ public final class DefaultRSSHistoryRepository: RSSHistoryRepository {
         return historyItem
     }
     
-    /// Adds item and returns updated items.
+    /// Adds item and returns updated items. It will fail if item with same url already exists.
     public func addRSSHistoryItem(_ historyItem: RSSHistoryItem) throws -> [RSSHistoryItem] {
         var historyItems = (try getRSSHistoryItems()) ?? []
         guard !historyItems.contains(where: { $0.channelURL == historyItem.channelURL }) else { throw RSSHistoryRepositoryError.urlAlreadyExists }
@@ -39,7 +39,7 @@ public final class DefaultRSSHistoryRepository: RSSHistoryRepository {
         return historyItems
     }
     
-    /// Adds item and returns updated items.
+    /// Removes item and returns updated items.
     public func removeRSSHistoryItem(historyItemID: UUID) throws -> [RSSHistoryItem] {
         var historyItems = (try getRSSHistoryItems()) ?? []
         historyItems = historyItems.filter({ $0.id != historyItemID })
@@ -47,7 +47,7 @@ public final class DefaultRSSHistoryRepository: RSSHistoryRepository {
         return historyItems
     }
     
-    /// Replaces item with same id with given `historyItem`.
+    /// Replaces item with same id.
     public func updateRSSHistoryItem(_ historyItem: RSSHistoryItem) throws -> [RSSHistoryItem] {
         var historyItems = (try getRSSHistoryItems()) ?? []
         guard let index = historyItems.firstIndex(where: { $0.id == historyItem.id }) else { throw RSSHistoryRepositoryError.historyItemNotFound }

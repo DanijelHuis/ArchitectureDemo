@@ -28,14 +28,14 @@ final class UserDefaultsPersistenceManagerTests: XCTestCase {
         sut = nil
     }
     
-    func test_save_givenValidEncodableObject_thenSavesToUserDefaults_thenObjectIsCorrectlyEncodedAndDecoded() throws {
+    func test_saveAndLoad_givenValidEncodableObject_thenSavesToUserDefaults_thenObjectIsCorrectlyEncodedAndDecoded() throws {
         // When
         try sut.save(Mock.testObject, forKey: "key1")
         // Then
         let loadedObject = try sut.load(key: "key1", type: TestObject.self)
-        XCTAssertNotNil(userDefaults.object(forKey: "key1"))
         XCTAssertEqual(loadedObject, Mock.testObject)
         XCTAssertEqual(loadedObject?.text, "text 1")
+        XCTAssertNotNil(userDefaults.object(forKey: "key1"))
     }
     
     func test_save_givenInvalidObject_thenThrowsError() throws {

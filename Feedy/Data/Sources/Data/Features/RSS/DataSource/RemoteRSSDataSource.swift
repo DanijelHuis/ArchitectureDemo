@@ -18,7 +18,7 @@ class RemoteRSSDataSource: RSSDataSource {
     /// Fetches RSS channel from remote URL.
     func getRSSChannel(url: URL) async throws -> RSSChannel {
         let request = try await httpClient.buildRequest(method: .get, url: url, query: nil, headers: nil, body: nil)
-        let response = try await httpClient.performRequest(request, decodedTo: RemoteRSSFeed.self)
+        let response = try await httpClient.performRequest(request, decodedTo: RemoteRSSChannelResponse.self)
         return response.channel.mapped(rssURL: url)
     }
 }
@@ -28,13 +28,13 @@ class RemoteRSSDataSource: RSSDataSource {
 private extension RemoteRSSChannel {
     func mapped(rssURL: URL) -> RSSChannel {
         let items = item?.map({ $0.mapped() }) ?? []
-        // Sorting by pubDate, feeds can vary.
+        // Sorting by pubDate.
         let sortedItems = items.sorted { $0.pubDate >>> $1.pubDate}
         
         return RSSChannel(title: title,
-                   description: description,
-                   imageURL: image?.url,
-                   items: sortedItems)
+                          description: description,
+                          imageURL: image?.url,
+                          items: sortedItems)
     }
 }
 
@@ -47,18 +47,18 @@ extension RemoteRSSItem {
     }
     
     func mapped() -> RSSItem {
-        // Parsing date manually here because we don't want parser to fail if some date format is wrong (spec not really clear).
+        // Parsing date manually because we don't want parser to fail if some date format is wrong (spec not really clear).
         var pubDateObject: Date?
         if let pubDate {
             pubDateObject = Self.dateFormatter.date(from: pubDate)
         }
         
         return RSSItem(guid: guid,
-                title: title,
-                description: description,
-                link: link,
-                imageURL: enclosure?.imageURL,
-                pubDate: pubDateObject)
+                       title: title,
+                       description: description,
+                       link: link,
+                       imageURL: enclosure?.imageURL,
+                       pubDate: pubDateObject)
     }
 }
 

@@ -85,7 +85,7 @@ final class DefaultRSSHistoryRepositoryTests: XCTestCase {
         }
     }
     
-    func test_getRSSHistoryItem_givenFailure_thenThrowsError() throws {
+    func test_getRSSHistoryItem_givenLoadFailure_thenThrowsError() throws {
         // Given
         persistenceManager.loadCallsResult = .failure(Mock.loadError)
         // Then
@@ -149,7 +149,6 @@ final class DefaultRSSHistoryRepositoryTests: XCTestCase {
         XCTAssertEqual(persistenceManager.saveCalls.count, 1)
     }
     
-    
     func test_removeRSSHistoryItem_givenLoadFailure_thenThrowsError() throws {
         // Given
         persistenceManager.loadCallsResult = .failure(Mock.loadError)
@@ -173,7 +172,6 @@ final class DefaultRSSHistoryRepositoryTests: XCTestCase {
     
     func test_updateRSSHistoryItem_givenSuccess_thenAddsItemAtTheEnd() throws {
         // Given
-        var allItems = Mock.items + [Mock.newItem]
         persistenceManager.loadCallsResult = .success(Mock.items)
         let modifiedItem = RSSHistoryItem(id: Mock.uuid2, channelURL: URL(string: "https://new")!, isFavourite: true)
         // When: replacing item 2

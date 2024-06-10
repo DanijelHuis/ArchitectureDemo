@@ -49,6 +49,8 @@ final class DefaultRSSRepositoryTests: XCTestCase {
         sut = nil
     }
     
+    // MARK: - getRSSChannel -
+    
     @UnitTestActor func test_getRSSChannel_givenSuccess_thenReturnsObject() async throws {
         // Given
         dataSource.getRSSChannelResult = .success(Mock.channel1)
@@ -67,6 +69,8 @@ final class DefaultRSSRepositoryTests: XCTestCase {
             try await sut.getRSSChannel(url: Mock.url1)
         }
     }
+    
+    // MARK: - getRSSChannels -
     
     @UnitTestActor func test_getRSSChannels_givenSuccessAndFailures_thenFetchesAndReturnsAllChannels() async throws {
         // Given

@@ -14,7 +14,7 @@ final class RemoteRSSDataSourceTests: XCTestCase {
     
     private struct Mock {
         static let url = URL(string: "https://test1")!
-        static let response = RemoteRSSFeed(
+        static let response = RemoteRSSChannelResponse(
             channel: .init(title: "channel title",
                            description: "channel description",
                            image: .init(url: URL(string: "https://channel1")),
@@ -77,13 +77,6 @@ final class RemoteRSSDataSourceTests: XCTestCase {
         let item1 = try XCTUnwrap(channel.items.first)
         let item2 = try XCTUnwrap(channel.items.last)
 
-        XCTAssertEqual(item2.guid, "item guid 1")
-        XCTAssertEqual(item2.title, "item title 1")
-        XCTAssertEqual(item2.description, "item description 1")
-        XCTAssertEqual(item2.link, URL(string: "https://link1")!)
-        XCTAssertEqual(item2.imageURL, URL(string: "https://enclosure1")!)
-        XCTAssertEqual(item2.pubDate, formatter.date(from: "2024-05-21T07:10:11+00:00"))
-
         XCTAssertEqual(item1.guid, "item guid 2")
         XCTAssertEqual(item1.title, "item title 2")
         XCTAssertEqual(item1.description, "item description 2")
@@ -91,6 +84,13 @@ final class RemoteRSSDataSourceTests: XCTestCase {
         // Then: it doesn't set url if type is not image.
         XCTAssertEqual(item1.imageURL, nil)
         XCTAssertEqual(item1.pubDate, formatter.date(from: "2024-05-22T08:11:12+00:00"))
+        
+        XCTAssertEqual(item2.guid, "item guid 1")
+        XCTAssertEqual(item2.title, "item title 1")
+        XCTAssertEqual(item2.description, "item description 1")
+        XCTAssertEqual(item2.link, URL(string: "https://link1")!)
+        XCTAssertEqual(item2.imageURL, URL(string: "https://enclosure1")!)
+        XCTAssertEqual(item2.pubDate, formatter.date(from: "2024-05-21T07:10:11+00:00"))
     }
     
     // This will test some standard test, e.g. when build request fails, when perform request fails etc.

@@ -19,10 +19,12 @@ public class DefaultRSSRepository: RSSRepository {
         self.remoteDataSource = remoteDataSource
     }
     
+    /// Loads single RSS channel.
     public func getRSSChannel(url: URL) async throws -> RSSChannel {
         try await remoteDataSource.getRSSChannel(url: url)
     }
     
+    /// Loads channels for given `historyItems` concurrently.
     public func getRSSChannels(historyItems: [RSSHistoryItem]) async -> [UUID: Result<RSSChannel, RSSChannelError>] {
         await withTaskGroup(of: (uuid: UUID, result: Result<RSSChannel, RSSChannelError>).self) { taskGroup in
             for historyItem in historyItems {

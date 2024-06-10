@@ -17,7 +17,7 @@ public final class URLSessionRequestBuilder {
         try await buildRequest(method: method, baseURL: url, path: nil, query: query, headers: headers, body: body)
     }
     
-    /// Builds request from given parameters and also adds standard JSON headers.
+    /// Builds request from given parameters.
     private func buildRequest(method: String, baseURL: URL?, path: String?, query: [String : String]?, headers: [String: String]?, body: Data?) async throws -> URLRequest {
         // URL
         guard let url = baseURL?.appending(unsanitizedPath: path).appending(query: query) else {
