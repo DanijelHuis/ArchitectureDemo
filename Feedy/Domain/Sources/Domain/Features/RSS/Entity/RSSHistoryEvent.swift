@@ -9,11 +9,11 @@ import Foundation
 
 public struct RSSHistoryEvent: Equatable {
     public let reason: Reason
-    public let historyItems: [RSSHistoryItem]
+    public let channels: [RSSChannelResponse]
     
-    public init(reason: Reason, historyItems: [RSSHistoryItem]) {
+    public init(reason: Reason, channels: [RSSChannelResponse]) {
         self.reason = reason
-        self.historyItems = historyItems
+        self.channels = channels
     }
     
     public enum Reason: Equatable {
@@ -21,6 +21,5 @@ public struct RSSHistoryEvent: Equatable {
         case add(historyItemID: UUID)
         case remove(historyItemID: UUID)
         case favouriteStatusUpdated(historyItemID: UUID)
-        case didUpdateLastReadItemID(historyItemID: UUID)
     }
 }

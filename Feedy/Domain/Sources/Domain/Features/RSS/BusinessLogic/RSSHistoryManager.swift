@@ -9,49 +9,52 @@ import Foundation
 import Combine
 
 /// Provides reactive component and business logic over RSSHistoryRepository.
-public class RSSHistoryManager: GetRSSHistoryItemsUseCase, AddRSSHistoryItemUseCase, RemoveRSSHistoryItemUseCase, ChangeHistoryItemFavouriteStatusUseCase, UpdateLastReadItemIDUseCase {
-    private let repository: RSSHistoryRepository
-    private let subject = PassthroughSubject<RSSHistoryEvent, Never>()
-    public var output: AnyPublisher<RSSHistoryEvent, Never> { subject.eraseToAnyPublisher() }
+public class RSSHistoryManager: GetRSSChannelsUseCase, AddRSSHistoryItemUseCase, RemoveRSSHistoryItemUseCase, ChangeHistoryItemFavouriteStatusUseCase {
+    private let historyRepository: RSSHistoryRepository
+    private let rssRepository: RSSRepository
+    private let subject = PassthroughSubject<[RSSChannelResponse], Never>()
+    private var channelsCache = [UUID: Result<RSSChannel, RSSChannelError>]()
+    public var output: AnyPublisher<[RSSChannelResponse], Never> { subject.eraseToAnyPublisher() }
     
-    public init(repository: RSSHistoryRepository) {
-        self.repository = repository
+    public init(historyRepository: RSSHistoryRepository, rssRepository: RSSRepository) {
+        self.historyRepository = historyRepository
+        self.rssRepository = rssRepository
     }
     
-    /// Loads items and sends `.update` event.
-    public func getRSSHistoryItems() throws {
-        let historyItems = (try repository.getRSSHistoryItems()) ?? []
-        subject.send(.init(reason: .update, historyItems: historyItems))
+    public func getRSSChannels() async throws {
+        let historyItems = try historyRepository.getRSSHistoryItems()
+        await getChannels(historyItems: historyItems ?? [], reload: true)
     }
     
-    /// Creates new item, adds it and sends `.add` event.
-    public func addRSSHistoryItem(channelURL: URL) throws {
-        let historyItemID = UUID()
-        let historyItems = try repository.addRSSHistoryItem(.init(id: historyItemID, channelURL: channelURL))
-        subject.send(.init(reason: .add(historyItemID: historyItemID), historyItems: historyItems))
+    public func addRSSHistoryItem(channelURL: URL) async throws {
+        let historyItems = try historyRepository.addRSSHistoryItem(.init(id: UUID(), channelURL: channelURL))
+        await getChannels(historyItems: historyItems, reload: true)
     }
     
-    /// Removes item and sends `.add` event
-    public func removeRSSHistoryItem(_ historyItemID: UUID) throws {
-        let historyItems = try repository.removeRSSHistoryItem(historyItemID: historyItemID)
-        subject.send(.init(reason: .remove(historyItemID: historyItemID), historyItems: historyItems))
+    public func removeRSSHistoryItem(_ historyItemID: UUID) async throws {
+        let historyItems = try historyRepository.removeRSSHistoryItem(historyItemID: historyItemID)
+        await getChannels(historyItems: historyItems, reload: false)
     }
     
-    /// Changes favourite status o and sends `.favouriteStatusUpdated` event.
-    public func changeFavouriteStatus(historyItemID: UUID, isFavourite: Bool) throws {
-        var historyItem = try repository.getRSSHistoryItem(id: historyItemID)
+    public func changeFavouriteStatus(historyItemID: UUID, isFavourite: Bool) async throws {
+        var historyItem = try historyRepository.getRSSHistoryItem(id: historyItemID)
         historyItem.isFavourite = isFavourite
-        let historyItems = try repository.updateRSSHistoryItem(historyItem)
-        subject.send(.init(reason: .favouriteStatusUpdated(historyItemID: historyItemID), historyItems: historyItems))
+        let historyItems = try historyRepository.updateRSSHistoryItem(historyItem)
+        await getChannels(historyItems: historyItems, reload: false)
     }
     
-    /// Updates lastReadItemID and sends `didUpdateLastReadItemID` event.
-    public func updateLastReadItemID(historyItemID: UUID, lastItemID: String) throws {
-        var historyItem = try repository.getRSSHistoryItem(id: historyItemID)
-        // Don't update if it didn't change.
-        guard historyItem.lastReadItemID != lastItemID else { return }
-        historyItem.lastReadItemID = lastItemID
-        let historyItems = try repository.updateRSSHistoryItem(historyItem)
-        subject.send(.init(reason: .didUpdateLastReadItemID(historyItemID: historyItemID), historyItems: historyItems))
+    // MARK: - Private -
+    
+    @MainActor
+    private func getChannels(historyItems: [RSSHistoryItem], reload: Bool) async {
+        // Checking for isEmpty just to be safe, if no history items then it won't load anything.
+        if reload || channelsCache.isEmpty {
+            channelsCache = await rssRepository.getRSSChannels(historyItems: historyItems)
+        }
+        
+        let channels = historyItems.reduce(into: [RSSChannelResponse]()) { partialResult, historyItem in
+            partialResult.append(.init(historyItem: historyItem, channel: channelsCache[historyItem.id]))
+        }
+        subject.send(channels)
     }
 }

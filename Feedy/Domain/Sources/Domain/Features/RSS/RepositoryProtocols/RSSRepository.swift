@@ -9,4 +9,5 @@ import Foundation
 
 public protocol RSSRepository {
     func getRSSChannel(url: URL) async throws -> RSSChannel
+    func getRSSChannels(historyItems: [RSSHistoryItem]) async -> [UUID: Result<RSSChannel, RSSChannelError>]
 }

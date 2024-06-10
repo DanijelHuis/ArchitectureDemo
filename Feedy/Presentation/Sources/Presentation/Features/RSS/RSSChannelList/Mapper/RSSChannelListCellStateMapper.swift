@@ -1,5 +1,5 @@
 //
-//  RSSChannelListCellState+Mapper.swift
+//  RSSChannelListCellStateMapper.swift
 //
 //
 //  Created by Danijel Huis on 20.05.2024..
@@ -9,9 +9,10 @@ import Foundation
 import Domain
 
 struct RSSChannelListCellStateMapper {
-    func map(historyItems: [RSSHistoryItem], rssChannels: [UUID : Result<RSSChannel, RSSChannelError>], isShowingFavourites: Bool) -> [RSSChannelListCell.State] {
-        historyItems.reduce(into: [RSSChannelListCell.State]()) { partialResult, historyItem in
-            let channelResult = rssChannels[historyItem.id]
+    func map(channels: [RSSChannelResponse], isShowingFavourites: Bool) -> [RSSChannelListCell.State] {
+        channels.reduce(into: [RSSChannelListCell.State]()) { partialResult, channelResponse in
+            let historyItem = channelResponse.historyItem
+            let channelResult = channelResponse.channel
             guard !isShowingFavourites || historyItem.isFavourite else { return }
             
             switch channelResult {

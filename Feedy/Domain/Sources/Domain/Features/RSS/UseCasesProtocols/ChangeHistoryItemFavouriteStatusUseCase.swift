@@ -8,5 +8,5 @@
 import Foundation
 
 public protocol ChangeHistoryItemFavouriteStatusUseCase {
-    func changeFavouriteStatus(historyItemID: UUID, isFavourite: Bool) throws
+    func changeFavouriteStatus(historyItemID: UUID, isFavourite: Bool) async throws
 }

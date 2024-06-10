@@ -2,11 +2,13 @@
 //  GetRSSChannelsUseCase.swift
 //  Feedy
 //
-//  Created by Danijel Huis on 18.05.2024..
+//  Created by Danijel Huis on 17.05.2024..
 //
 
 import Foundation
+import Combine
 
 public protocol GetRSSChannelsUseCase {
-    func getRSSChannels(historyItems: [RSSHistoryItem]) async -> [UUID: Result<RSSChannel, RSSChannelError>]
+    var output: AnyPublisher<[RSSChannelResponse], Never> { get }
+    func getRSSChannels() async throws
 }

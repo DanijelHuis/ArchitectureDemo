@@ -7,16 +7,15 @@
 
 import Foundation
 
-extension RSSHistoryItem {
+public extension RSSHistoryItem {
     static func mock(id: UUID = UUID(),
                      channelURL: URL = URL(string: "https://history")!,
-                     isFavourite: Bool = false,
-                     lastReadItemID: String? = nil) -> RSSHistoryItem {
-        .init(id: id, channelURL: channelURL, isFavourite: isFavourite, lastReadItemID: lastReadItemID)
+                     isFavourite: Bool = false) -> RSSHistoryItem {
+        .init(id: id, channelURL: channelURL, isFavourite: isFavourite)
     }
 }
 
-extension RSSChannel {
+public extension RSSChannel {
     static func mock(title: String = UUID().uuidString,
                      description: String = UUID().uuidString,
                      imageURL: URL? = URL(string: "https://channel")!,
@@ -25,7 +24,7 @@ extension RSSChannel {
     }
 }
 
-extension RSSItem {
+public extension RSSItem {
     static func mock(guid: String = UUID().uuidString,
                      title: String? = UUID().uuidString,
                      description: String? = UUID().uuidString,

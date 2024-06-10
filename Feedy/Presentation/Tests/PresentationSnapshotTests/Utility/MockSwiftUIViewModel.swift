@@ -7,7 +7,7 @@
 import Presentation
 
 class MockSwiftUIViewModel<State, Action>: SwiftUIViewModel {
-    var effectManager = SideEffectManager()
+    var effectManager = EffectManager()
     var state: State
     
     init(state: State) {

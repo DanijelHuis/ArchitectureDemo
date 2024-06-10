@@ -15,7 +15,7 @@ final class AddRSSChannelViewModelTests: XCTestCase {
     private var validateRSSChannelUseCase: MockValidateRSSChannelUseCase!
     private var addRSSHistoryItemUseCase: MockAddRSSHistoryItemUseCase!
     private var coordinator: MockCoordinator!
-    private var effectManager: SideEffectManager!
+    private var effectManager: EffectManager!
     private var sut: AddRSSChannelViewModel!
     
     private var stateCalls = [AddRSSChannelViewModel.State]()

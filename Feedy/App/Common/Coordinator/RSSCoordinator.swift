@@ -17,10 +17,9 @@ import CommonUI
         switch route {
             
         case .list:
-            let viewModel = RSSChannelListViewModel(getRSSHistoryItemsUseCase: Container.sharedRSSHistoryManager,
+            let viewModel = RSSChannelListViewModel(getRSSChannelsUseCase: Container.sharedRSSHistoryManager,
                                                     removeRSSHistoryItemUseCase: Container.sharedRSSHistoryManager,
-                                                    getRSSChannelsUseCase: Container.getRSSChannelsUseCase,
-                                                    effectManager: SideEffectManager(),
+                                                    effectManager: EffectManager(),
                                                     coordinator: AppCoordinator(navigator: navigator))
             
             return .push(view: RSSChannelListView(viewModel: .init(viewModel: viewModel)))
@@ -28,7 +27,7 @@ import CommonUI
         case .add:
             let viewModel = AddRSSChannelViewModel(validateRSSChannelUseCase: Container.validateRSSChannelUseCase,
                                                    addRSSHistoryItemUseCase: Container.sharedRSSHistoryManager,
-                                                   effectManager: SideEffectManager())
+                                                   effectManager: EffectManager())
             viewModel.onFinished = {
                 navigator.pop()
             }
@@ -38,11 +37,10 @@ import CommonUI
         case .details(let rssHistoryItem, let channel):
             let viewModel = RSSChannelDetailsViewModel(rssHistoryItem: rssHistoryItem,
                                                        rssChannel: channel,
-                                                       getRSSHistoryItemsUseCase: Container.sharedRSSHistoryManager,
+                                                       getRSSChannelsUseCase: Container.sharedRSSHistoryManager,
                                                        getRSSChannelUseCase: Container.rssRepository,
                                                        changeHistoryItemFavouriteStatusUseCase: Container.sharedRSSHistoryManager,
-                                                       updateLastReadItemIDUseCase: Container.sharedRSSHistoryManager,
-                                                       effectManager: SideEffectManager(),
+                                                       effectManager: EffectManager(),
                                                        coordinator: AppCoordinator(navigator: navigator))
             
             return .push(view: RSSChannelDetailsView(viewModel: .init(viewModel: viewModel)))

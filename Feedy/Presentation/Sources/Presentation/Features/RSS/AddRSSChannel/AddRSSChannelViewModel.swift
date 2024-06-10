@@ -12,12 +12,12 @@ import Domain
     // Dependencies
     private let validateRSSChannelUseCase: ValidateRSSChannelUseCase
     private let addRSSHistoryItemUseCase: AddRSSHistoryItemUseCase
-    public let effectManager: SideEffectManager
+    public let effectManager: EffectManager
     // Other
     @Published public private(set) var state: State = State()
     public var onFinished: (() -> Void)?
 
-    public init(validateRSSChannelUseCase: ValidateRSSChannelUseCase, addRSSHistoryItemUseCase: AddRSSHistoryItemUseCase, effectManager: SideEffectManager) {
+    public init(validateRSSChannelUseCase: ValidateRSSChannelUseCase, addRSSHistoryItemUseCase: AddRSSHistoryItemUseCase, effectManager: EffectManager) {
         self.validateRSSChannelUseCase = validateRSSChannelUseCase
         self.addRSSHistoryItemUseCase = addRSSHistoryItemUseCase
         self.effectManager = effectManager
@@ -47,7 +47,7 @@ import Domain
                 
                 if isValid {
                     do {
-                        try self.addRSSHistoryItemUseCase.addRSSHistoryItem(channelURL: url)
+                        try await self.addRSSHistoryItemUseCase.addRSSHistoryItem(channelURL: url)
                         self.onFinished?()
                     } catch {
                         if (error as? RSSHistoryRepositoryError) == RSSHistoryRepositoryError.urlAlreadyExists {

@@ -13,77 +13,70 @@ import CommonUI
 
 @MainActor public final class RSSChannelListViewModel: SwiftUIViewModel {
     // Dependencies
-    private let getRSSHistoryItemsUseCase: GetRSSHistoryItemsUseCase
-    private let removeRSSHistoryItemUseCase: RemoveRSSHistoryItemUseCase
     private let getRSSChannelsUseCase: GetRSSChannelsUseCase
+    private let removeRSSHistoryItemUseCase: RemoveRSSHistoryItemUseCase
     private let coordinator: Coordinator
-    public let effectManager: SideEffectManager
-    @Published public private(set) var state: State = State(historyItems: [], rssChannels: [:])
+    public let effectManager: EffectManager
+    @Published public private(set) var state: State = State(channels: [])
     // Private
     private var cancellables: Set<AnyCancellable> = []
     
-    public init(getRSSHistoryItemsUseCase: GetRSSHistoryItemsUseCase, removeRSSHistoryItemUseCase: RemoveRSSHistoryItemUseCase, getRSSChannelsUseCase: GetRSSChannelsUseCase, effectManager: SideEffectManager, coordinator: Coordinator) {
-        self.getRSSHistoryItemsUseCase = getRSSHistoryItemsUseCase
-        self.removeRSSHistoryItemUseCase = removeRSSHistoryItemUseCase
+    public init(getRSSChannelsUseCase: GetRSSChannelsUseCase, removeRSSHistoryItemUseCase: RemoveRSSHistoryItemUseCase, effectManager: EffectManager, coordinator: Coordinator) {
         self.getRSSChannelsUseCase = getRSSChannelsUseCase
+        self.removeRSSHistoryItemUseCase = removeRSSHistoryItemUseCase
         self.coordinator = coordinator
         self.effectManager = effectManager
         observeEnvironment()
     }
     
     private func observeEnvironment() {
-        getRSSHistoryItemsUseCase.output.sink { [weak self] event in
+        getRSSChannelsUseCase.output.sink { [weak self] channels in
             guard let self else { return }
-            state.historyItems = event.historyItems
-            
-            // We need to reload RSS channels only if they were updated or new one is added.
-            switch event.reason {
-            case .update, .add:
-                reloadRSSChannels()
-            case .remove, .favouriteStatusUpdated, .didUpdateLastReadItemID:
-                break
-            }
+            state.channels = channels
         }.store(in: &cancellables)
     }
     
     public func send(_ action: Action) {
         switch action {
-        case .onFirstAppear, .didInitiateRefresh:
-            getHistoryItems()
+        case .onFirstAppear:
+            effectManager.run {
+                await self.getChannels(showLoading: true)
+            }
+            
+        case .didInitiateRefresh:
+            effectManager.run {
+                await self.getChannels(showLoading: false)
+            }
             
         case .didTapAddChannelButton:
             coordinator.openRoute(.rss(.add))
             
         case .didTapRemoveHistoryItem(let id):
-            try? removeRSSHistoryItemUseCase.removeRSSHistoryItem(id)
+            effectManager.run {
+                try? await self.removeRSSHistoryItemUseCase.removeRSSHistoryItem(id)
+            }
             
         case .didSelectItem(let historyItemID):
-            guard let historyItem = self.state.historyItems.first(where: { $0.id == historyItemID }) else { return }
-            guard let channelResult = self.state.rssChannels[historyItemID] else { return }
-            guard case let .success(channel) = channelResult else { return }
-            coordinator.openRoute(.rss(.details(rssHistoryItem: historyItem, channel: channel)))
+            guard let channelResponse = state.channels.first(where: { $0.historyItem.id == historyItemID }) else { return }
+            guard case let .success(channel) = channelResponse.channel else { return }
+            coordinator.openRoute(.rss(.details(rssHistoryItem: channelResponse.historyItem, channel: channel)))
             
         case .toggleFavourites:
             state.isShowingFavourites.toggle()
         }
     }
-    
-    /// This will trigger getRSSHistoryItemsUseCase which will then reload and refresh.
-    private func getHistoryItems() {
+        
+    private func getChannels(showLoading: Bool) async {
+        if showLoading {
+            state.isLoading = true
+        }
+        defer { state.isLoading = false }
+        
         do {
-            try self.getRSSHistoryItemsUseCase.getRSSHistoryItems()
+            try await self.getRSSChannelsUseCase.getRSSChannels()
             state.didFail = false
         } catch {
             state.didFail = true
-        }
-    }
-    
-    /// Fetches channels.
-    private func reloadRSSChannels() {
-        effectManager.run {
-            self.state.isLoading = true
-            self.state.rssChannels = await self.getRSSChannelsUseCase.getRSSChannels(historyItems: self.state.historyItems)
-            self.state.isLoading = false
         }
     }
 }
@@ -93,16 +86,14 @@ import CommonUI
 extension RSSChannelListViewModel {
     public struct State: Equatable {
         // Data state
-        var historyItems = [RSSHistoryItem]()
-        var rssChannels = [UUID : Result<RSSChannel, RSSChannelError>]()
+        var channels = [RSSChannelResponse]()
         var didFail = false
         var isLoading = false
         var isShowingFavourites: Bool
 
-        public init(isShowingFavourites: Bool = false, historyItems: [RSSHistoryItem], rssChannels: [UUID : Result<RSSChannel, RSSChannelError>]) {
-            self.historyItems = historyItems
-            self.rssChannels = rssChannels
+        public init(isShowingFavourites: Bool = false, channels: [RSSChannelResponse]) {
             self.isShowingFavourites = isShowingFavourites
+            self.channels = channels
         }
         
         // View
@@ -115,9 +106,7 @@ extension RSSChannelListViewModel {
                 return .error()
             } else {
                 // RSSChannelListCellStateMapper is pure, no need to inject
-                let cellStates = RSSChannelListCellStateMapper().map(historyItems: historyItems,
-                                                                     rssChannels: rssChannels,
-                                                                     isShowingFavourites: isShowingFavourites)
+                let cellStates = RSSChannelListCellStateMapper().map(channels: channels, isShowingFavourites: isShowingFavourites)
                 if cellStates.isEmpty {
                     let message = isShowingFavourites ? "rss_list_no_favourites".localized : "rss_list_no_channels".localized
                     return .empty(text: message)

@@ -17,7 +17,7 @@ import SwiftUI
     /// Current State. Implementations should mark it with @Published.
     var state: State { get }
     /// Effect manager's responsibility is to run all async tasks. This separation is convenient for testing but also for waiting all tasks to finish.
-    var effectManager: SideEffectManager { get }
+    var effectManager: EffectManager { get }
     /// Sends action to view model.
     func send(_ action: Action)
 }
@@ -82,7 +82,7 @@ extension ObservableSwiftUIViewModel {
 
 // MARK: - EffectManager -
 
-@MainActor public final class SideEffectManager {
+@MainActor public final class EffectManager {
     private var tasks = [String: Task<Void, Never>]()
     
     public init() {}

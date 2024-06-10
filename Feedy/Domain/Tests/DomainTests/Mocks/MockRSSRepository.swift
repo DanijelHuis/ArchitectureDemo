@@ -9,7 +9,7 @@ import Foundation
 import Domain
 import TestUtility
 
-@UnitTestActor final class MockRSSRepository: RSSRepository {
+final class MockRSSRepository: RSSRepository {
     var getRSSChannelCalls = [URL]()
     var getRSSChannelResultPerURL = [URL: Result<RSSChannel, Error>]()
     var getRSSChannelResult: Result<RSSChannel, Error> = .failure(MockError.mockNotSetup)
@@ -20,5 +20,12 @@ import TestUtility
             return try result.get()
         }
         return try getRSSChannelResult.get()
+    }
+    
+    var getRSSChannelsCalls = [[RSSHistoryItem]]()
+    var getRSSChannelsResult = [UUID : Result<Domain.RSSChannel, RSSChannelError>]()
+    func getRSSChannels(historyItems: [Domain.RSSHistoryItem]) async -> [UUID : Result<Domain.RSSChannel, RSSChannelError>] {
+        getRSSChannelsCalls.append(historyItems)
+        return getRSSChannelsResult
     }
 }

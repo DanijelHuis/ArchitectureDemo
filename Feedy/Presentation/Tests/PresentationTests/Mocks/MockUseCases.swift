@@ -12,13 +12,23 @@ import Combine
 @testable import Presentation
 
 final class MockGetRSSChannelsUseCase: GetRSSChannelsUseCase {
-    var getRSSChannelsCalls = [[RSSHistoryItem]]()
-    var getRSSChannelsResult = [UUID : Result<Domain.RSSChannel, RSSChannelError>]()
-    func getRSSChannels(historyItems: [Domain.RSSHistoryItem]) async -> [UUID : Result<Domain.RSSChannel, RSSChannelError>] {
-        getRSSChannelsCalls.append(historyItems)
-        return getRSSChannelsResult
+    var subject = PassthroughSubject<[RSSChannelResponse], Never>()
+    var output: AnyPublisher<[RSSChannelResponse], Never> { subject.eraseToAnyPublisher() }
+        
+    var channelsToEmit: [RSSChannelResponse]?
+    var getRSSChannelsCalls = 0
+    var getRSSChannelsError: Error?
+    func getRSSChannels() async throws {
+        getRSSChannelsCalls += 1
+        if let getRSSChannelsError {
+            throw getRSSChannelsError
+        }
+        if let channelsToEmit {
+            subject.send(channelsToEmit)
+        }
     }
 }
+
 
 final class MockAddRSSHistoryItemUseCase: AddRSSHistoryItemUseCase {
     var addRSSHistoryItemCalls = [URL]()
@@ -51,24 +61,6 @@ final class MockGetRSSChannelUseCase: GetRSSChannelUseCase {
     }
 }
 
-final class MockGetRSSHistoryItemsUseCase: GetRSSHistoryItemsUseCase {
-    var subject = PassthroughSubject<RSSHistoryEvent, Never>()
-    var output: AnyPublisher<Domain.RSSHistoryEvent, Never> { subject.eraseToAnyPublisher() }
-    var eventToEmit: RSSHistoryEvent?
-    
-    var getRSSHistoryItemsCalls = 0
-    var getRSSHistoryItemsError: Error?
-    func getRSSHistoryItems() throws {
-        getRSSHistoryItemsCalls += 1
-        if let getRSSHistoryItemsError {
-            throw getRSSHistoryItemsError
-        }
-        if let eventToEmit {
-            subject.send(eventToEmit)
-        }
-    }
-}
-
 final class MockRemoveRSSHistoryItemUseCase: RemoveRSSHistoryItemUseCase {
     var removeRSSHistoryItemCalls = [UUID]()
     var removeRSSHistoryItemError: Error?
@@ -86,16 +78,5 @@ final class MockValidateRSSChannelUseCase: ValidateRSSChannelUseCase {
     func validateRSSChannel(url: URL) async -> Bool {
         validateRSSChannelCalls.append(url)
         return validateRSSChannelResult
-    }
-}
-
-final class MockUpdateLastReadItemIDUseCase: UpdateLastReadItemIDUseCase {
-    var updateLastReadItemIDCalls = [(historyItemID: UUID, lastItemID: String)]()
-    var updateLastReadItemIDError: Error?
-    func updateLastReadItemID(historyItemID: UUID, lastItemID: String) throws {
-        updateLastReadItemIDCalls.append((historyItemID, lastItemID))
-        if let updateLastReadItemIDError {
-            throw updateLastReadItemIDError
-        }
     }
 }

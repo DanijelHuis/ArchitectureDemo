@@ -13,11 +13,11 @@
 		0C718B312BFAA73100F6F05B /* RSSCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C718B282BFAA73100F6F05B /* RSSCoordinator.swift */; };
 		0C718B322BFAA73100F6F05B /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C718B2A2BFAA73100F6F05B /* Container.swift */; };
 		0C9F876E2BFAA25500BFCC39 /* Presentation in Frameworks */ = {isa = PBXBuildFile; productRef = 0C9F876D2BFAA25500BFCC39 /* Presentation */; };
+		0CAF40F72C16F15000A75A58 /* PresentationMVVM in Frameworks */ = {isa = PBXBuildFile; productRef = 0CAF40F62C16F15000A75A58 /* PresentationMVVM */; };
 		0CCBF59B2BFAA3E700954094 /* XMLCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 0CCBF59A2BFAA3E700954094 /* XMLCoder */; };
 		0CCBF59D2BFAA5A900954094 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0CCBF59C2BFAA5A900954094 /* Images.xcassets */; };
 		0CDFB13B2BFA97BE00A70F7D /* URLSessionNetworking in Frameworks */ = {isa = PBXBuildFile; productRef = 0CDFB13A2BFA97BE00A70F7D /* URLSessionNetworking */; };
 		0CDFB13F2BFA9B5800A70F7D /* Domain in Frameworks */ = {isa = PBXBuildFile; productRef = 0CDFB13E2BFA9B5800A70F7D /* Domain */; };
-		0CDFB1412BFA9B5D00A70F7D /* TestUtility in Frameworks */ = {isa = PBXBuildFile; productRef = 0CDFB1402BFA9B5D00A70F7D /* TestUtility */; };
 		0CDFB1442BFA9E4400A70F7D /* Data in Frameworks */ = {isa = PBXBuildFile; productRef = 0CDFB1432BFA9E4400A70F7D /* Data */; };
 		0CE571892BF7702900F75AE9 /* FeedyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE571882BF7702900F75AE9 /* FeedyApp.swift */; };
 		0CE571902BF7702A00F75AE9 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0CE5718F2BF7702A00F75AE9 /* Preview Assets.xcassets */; };
@@ -45,6 +45,7 @@
 		0C9F876B2BFAA22800BFCC39 /* Data */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Data; sourceTree = "<group>"; };
 		0C9F876C2BFAA22800BFCC39 /* Domain */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Domain; sourceTree = "<group>"; };
 		0CA8A4832C1600E30041D72D /* CommonUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = CommonUI; sourceTree = "<group>"; };
+		0CAF40F52C16E88200A75A58 /* PresentationMVVM */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = PresentationMVVM; sourceTree = "<group>"; };
 		0CBBE6DE2BFBE422001796CA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0CCBF59C2BFAA5A900954094 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		0CDFB13D2BFA993700A70F7D /* TestUtility */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TestUtility; sourceTree = "<group>"; };
@@ -64,7 +65,7 @@
 				0CDFB13B2BFA97BE00A70F7D /* URLSessionNetworking in Frameworks */,
 				0CDFB1442BFA9E4400A70F7D /* Data in Frameworks */,
 				0CCBF59B2BFAA3E700954094 /* XMLCoder in Frameworks */,
-				0CDFB1412BFA9B5D00A70F7D /* TestUtility in Frameworks */,
+				0CAF40F72C16F15000A75A58 /* PresentationMVVM in Frameworks */,
 				0CDFB13F2BFA9B5800A70F7D /* Domain in Frameworks */,
 				0C9F876E2BFAA25500BFCC39 /* Presentation in Frameworks */,
 			);
@@ -160,6 +161,7 @@
 				0C9F876C2BFAA22800BFCC39 /* Domain */,
 				0CA8A4832C1600E30041D72D /* CommonUI */,
 				0C9F876A2BFAA1D800BFCC39 /* Presentation */,
+				0CAF40F52C16E88200A75A58 /* PresentationMVVM */,
 				0C718B2C2BFAA73100F6F05B /* App */,
 			);
 			path = Feedy;
@@ -228,10 +230,10 @@
 			packageProductDependencies = (
 				0CDFB13A2BFA97BE00A70F7D /* URLSessionNetworking */,
 				0CDFB13E2BFA9B5800A70F7D /* Domain */,
-				0CDFB1402BFA9B5D00A70F7D /* TestUtility */,
 				0CDFB1432BFA9E4400A70F7D /* Data */,
 				0C9F876D2BFAA25500BFCC39 /* Presentation */,
 				0CCBF59A2BFAA3E700954094 /* XMLCoder */,
+				0CAF40F62C16F15000A75A58 /* PresentationMVVM */,
 			);
 			productName = Feedy;
 			productReference = 0CE571852BF7702900F75AE9 /* Feedy.app */;
@@ -615,6 +617,10 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = Presentation;
 		};
+		0CAF40F62C16F15000A75A58 /* PresentationMVVM */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PresentationMVVM;
+		};
 		0CCBF59A2BFAA3E700954094 /* XMLCoder */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0CCBF5992BFAA3E700954094 /* XCRemoteSwiftPackageReference "XMLCoder" */;
@@ -627,10 +633,6 @@
 		0CDFB13E2BFA9B5800A70F7D /* Domain */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Domain;
-		};
-		0CDFB1402BFA9B5D00A70F7D /* TestUtility */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = TestUtility;
 		};
 		0CDFB1432BFA9E4400A70F7D /* Data */ = {
 			isa = XCSwiftPackageProductDependency;

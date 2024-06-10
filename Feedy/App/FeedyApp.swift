@@ -40,7 +40,9 @@ struct FeedyApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MainView(navigator: navigator, rootView: rssList)
+            AppNavigationStack(navigator: navigator) {
+                AnyView(rssList)
+            }
         }
     }
 }

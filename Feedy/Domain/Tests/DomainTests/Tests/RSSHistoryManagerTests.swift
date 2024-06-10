@@ -11,10 +11,10 @@ import TestUtility
 @testable import Domain
 
 final class RSSHistoryManagerTests: XCTestCase {
-    private var repository: MockRSSHistoryRepository!
+    private var historyRepository: MockRSSHistoryRepository!
+    private var rssRepository: MockRSSRepository!
     private var sut: RSSHistoryManager!
-    
-    private var events = [RSSHistoryEvent]()
+    private var outputCalls = [[RSSChannelResponse]]()
     private var cancellables: Set<AnyCancellable> = []
     
     private struct Mock {
@@ -23,134 +23,179 @@ final class RSSHistoryManagerTests: XCTestCase {
         static let item1 = RSSHistoryItem.mock()
         static let item2 = RSSHistoryItem.mock()
         static let item3 = RSSHistoryItem.mock()
+        static let channel1 = RSSChannel.mock()
+        static let channel2 = RSSChannel.mock()
+        static let channel3 = RSSChannel.mock()
         static let items = [item1, item2, item3]
+        static let channels = [
+            RSSChannelResponse(historyItem: item1, channel: .success(channel1)),
+            RSSChannelResponse(historyItem: item2, channel: .success(channel2)),
+            RSSChannelResponse(historyItem: item3, channel: .success(channel3))
+        ]
+        static let channelsResponse: [UUID: Result<RSSChannel, RSSChannelError>] = [item1.id: .success(channel1), item2.id: .success(channel2), item3.id: .success(channel3)]
     }
     
     override func setUp() {
-        repository = .init()
-        sut = .init(repository: repository)
+        historyRepository = .init()
+        rssRepository = .init()
+        sut = .init(historyRepository: historyRepository, rssRepository: rssRepository)
         
-        sut.output.sink { [weak self] event in
-            self?.events.append(event)
+        sut.output.sink { [weak self] channels in
+            self?.outputCalls.append(channels)
         }.store(in: &cancellables)
     }
     
     override func tearDown() {
-        repository = nil
+        historyRepository = nil
+        rssRepository = nil
         sut = nil
     }
     
-    // MARK: - getRSSHistoryItems -
-    
-    func test_getRSSHistoryItems_givenSuccess_thenSendsUpdateEventWithCorrectItems() throws {
-        // Given
-        repository.getRSSHistoryItemsResult = .success(Mock.items)
-        // When
-        try sut.getRSSHistoryItems()
-        // Then
-        XCTAssertEqual(events, [.init(reason: .update, historyItems: Mock.items)])
+    // The purpose of this is to set channelsCache, that way we can test if channels were force-reloaded or not.
+    private func loadInitialChannels() async throws {
+        historyRepository.getRSSHistoryItemsResult = .success(Mock.items)
+        rssRepository.getRSSChannelsResult = Mock.channelsResponse
+        try await sut.getRSSChannels()
+        outputCalls.removeAll()
+        
+        // Resetting default mock values
+        historyRepository.getRSSHistoryItemsResult = .failure(MockError.mockNotSetup)
+        rssRepository.getRSSChannelsResult.removeAll()
+        rssRepository.getRSSChannelsCalls.removeAll()
     }
     
-    func test_getRSSHistoryItems_givenFailure_thenThrows() throws {
+    
+    // MARK: - getRSSHistoryItems -
+    
+    func test_getRSSChannels_givenSuccess_thenEmitsCorrectChannels() async throws {
         // Given
-        repository.getRSSHistoryItemsResult = .failure(Mock.error)
+        try await loadInitialChannels()
+        historyRepository.getRSSHistoryItemsResult = .success(Mock.items)
+        rssRepository.getRSSChannelsResult = Mock.channelsResponse;
         // When
-        XCTAssertThrowsError(try sut.getRSSHistoryItems()) { error in
-            XCTAssertEqual(error as? MockError, Mock.error)
+        try await sut.getRSSChannels()
+        // Then: Reloads channels
+        XCTAssertEqual(rssRepository.getRSSChannelsCalls.count, 1)
+        // Then: outputs correct channels
+        XCTAssertEqual(outputCalls, [Mock.channels])
+    }
+    
+    func test_getRSSChannels_givenFailure_thenThrows() async throws {
+        // Given
+        historyRepository.getRSSHistoryItemsResult = .failure(Mock.error)
+        // Then
+        await XCTAssertError(Mock.error) {
+            // When
+            try await sut.getRSSChannels()
         }
-        XCTAssertEqual(events, [])
     }
     
     // MARK: - addRSSHistoryItem -
     
-    func test_addRSSHistoryItem_givenSuccess_thenAddsItemAndSendsAddEvent() throws {
+    func test_addRSSHistoryItem_givenSuccess_thenAddsItemAndEmitsCorrectChannels() async throws {
         // Given
-        repository.addRSSHistoryItemResult = .success(Mock.items)
+        try await loadInitialChannels()
+        historyRepository.addRSSHistoryItemResult = .success(Mock.items)
+        rssRepository.getRSSChannelsResult = Mock.channelsResponse;
         // When
-        try sut.addRSSHistoryItem(channelURL: Mock.url)
+        try await sut.addRSSHistoryItem(channelURL: Mock.url)
         // Then: sends correct parameters to repository
-        XCTAssertEqual(repository.addRSSHistoryItemCalls.count, 1)
-        XCTAssertEqual(repository.addRSSHistoryItemCalls.first?.channelURL, Mock.url)
-        let addedID = try XCTUnwrap(repository.addRSSHistoryItemCalls.first?.id)
-        // Then: outputs correct event
-        XCTAssertEqual(events.count, 1)
-        XCTAssertEqual(events, [.init(reason: .add(historyItemID: addedID), historyItems: Mock.items)])
+        XCTAssertEqual(historyRepository.addRSSHistoryItemCalls.count, 1)
+        XCTAssertEqual(historyRepository.addRSSHistoryItemCalls.first?.channelURL, Mock.url)
+        // Then: Reloads channels
+        XCTAssertEqual(rssRepository.getRSSChannelsCalls.count, 1)
+        // Then: outputs correct channels
+        XCTAssertEqual(outputCalls, [Mock.channels])
     }
     
-    func test_addRSSHistoryItem_givenFailure_thenThrows() throws {
+    func test_addRSSHistoryItem_givenHistoryRepositoryFailure_thenThrows() async throws {
         // Given
-        repository.addRSSHistoryItemResult = .failure(Mock.error)
-        // When
-        XCTAssertThrowsError(try sut.addRSSHistoryItem(channelURL: Mock.url)) { error in
-            XCTAssertEqual(error as? MockError, Mock.error)
+        try await loadInitialChannels()
+        historyRepository.addRSSHistoryItemResult = .failure(Mock.error)
+        // Then
+        await XCTAssertError(Mock.error) {
+            // When
+            try await sut.addRSSHistoryItem(channelURL: Mock.url)
         }
-        XCTAssertEqual(events, [])
     }
     
     // MARK: - removeRSSHistoryItem -
     
-    func test_removeRSSHistoryItem_givenSuccess_thenRemovesItemAndSendsRemoveEvent() throws {
+    func test_removeRSSHistoryItem_givenSuccess_thenRemovesItemAndEmitsCorrectChannels() async throws {
         // Given
+        try await loadInitialChannels()
         let uuid = UUID()
-        repository.removeRSSHistoryItemResult = .success(Mock.items)
+        historyRepository.removeRSSHistoryItemResult = .success(Mock.items)
+        rssRepository.getRSSChannelsResult = Mock.channelsResponse;
         // When
-        try sut.removeRSSHistoryItem(uuid)
-        // Then
-        XCTAssertEqual(events, [.init(reason: .remove(historyItemID: uuid), historyItems: Mock.items)])
+        try await sut.removeRSSHistoryItem(uuid)
+        // Then: sends correct parameters to repository
+        XCTAssertEqual(historyRepository.removeRSSHistoryItemCalls.count, 1)
+        XCTAssertEqual(historyRepository.removeRSSHistoryItemCalls.first, uuid)
+        // Then: Doesn't reload channels
+        XCTAssertEqual(rssRepository.getRSSChannelsCalls.count, 0)
+        // Then: outputs correct channels
+        XCTAssertEqual(outputCalls, [Mock.channels])
     }
     
-    func test_removeRSSHistoryItem_givenFailure_thenThrows() throws {
+    func test_removeRSSHistoryItem_givenFailure_thenThrows() async throws {
         // Given
         let uuid = UUID()
-        repository.removeRSSHistoryItemResult = .failure(Mock.error)
-        // When
-        XCTAssertThrowsError(try sut.removeRSSHistoryItem(uuid)) { error in
-            XCTAssertEqual(error as? MockError, Mock.error)
+        historyRepository.removeRSSHistoryItemResult = .failure(Mock.error)
+        // Then
+        await XCTAssertError(Mock.error) {
+            // When
+            try await sut.removeRSSHistoryItem(uuid)
         }
-        XCTAssertEqual(events, [])
     }
     
     // MARK: - changeFavouriteStatus -
     
-    func test_changeFavouriteStatus_givenSuccess_thenSendsUpdateEventWithCorrectItems() throws {
+    func test_changeFavouriteStatus_givenSuccess_thenChangesFavouriteStateAndEmitsCorrectChannels() async throws {
         // Given
+        try await loadInitialChannels()
         let item = Mock.item2
-        repository.getRSSHistoryItemResult = .success(item)
-        repository.updateRSSHistoryItemResult = .success(Mock.items)
+        historyRepository.getRSSHistoryItemResult = .success(item)
+        historyRepository.updateRSSHistoryItemResult = .success(Mock.items)
         // When
-        try sut.changeFavouriteStatus(historyItemID: item.id, isFavourite: true)
+        try await sut.changeFavouriteStatus(historyItemID: item.id, isFavourite: true)
         // Then: request correct item
-        XCTAssertEqual(repository.getRSSHistoryItemCalls.count, 1)
-        XCTAssertEqual(repository.getRSSHistoryItemCalls.first, item.id)
+        XCTAssertEqual(historyRepository.getRSSHistoryItemCalls.count, 1)
+        XCTAssertEqual(historyRepository.getRSSHistoryItemCalls.first, item.id)
         // Then: updates correct item and sets favourite
-        XCTAssertEqual(repository.updateRSSHistoryItemCalls.count, 1)
-        XCTAssertEqual(repository.updateRSSHistoryItemCalls.first?.id, item.id)
-        XCTAssertEqual(repository.updateRSSHistoryItemCalls.first?.isFavourite, true)
-        // Then: sends correct event
-        XCTAssertEqual(events, [.init(reason: .favouriteStatusUpdated(historyItemID: item.id), historyItems: Mock.items)])
+        XCTAssertEqual(historyRepository.updateRSSHistoryItemCalls.count, 1)
+        XCTAssertEqual(historyRepository.updateRSSHistoryItemCalls.first?.id, item.id)
+        XCTAssertEqual(historyRepository.updateRSSHistoryItemCalls.first?.isFavourite, true)
+        // Then: Doesn't reload channels
+        XCTAssertEqual(rssRepository.getRSSChannelsCalls.count, 0)
+        // Then: outputs correct channels
+        XCTAssertEqual(outputCalls, [Mock.channels])
     }
     
-    func test_changeFavouriteStatus_givenGetRSSHistoryItemFailure_thenThrows() throws {
+    func test_changeFavouriteStatus_givenGetRSSHistoryItemFailure_thenThrows() async throws {
         // Given
+        try await loadInitialChannels()
         let item = Mock.item2
-        repository.getRSSHistoryItemResult = .failure(Mock.error)
-        repository.updateRSSHistoryItemResult = .success(Mock.items)
-        // When
-        XCTAssertThrowsError(try sut.changeFavouriteStatus(historyItemID: item.id, isFavourite: true)) { error in
-            XCTAssertEqual(error as? MockError, Mock.error)
+        historyRepository.getRSSHistoryItemResult = .failure(Mock.error)
+        historyRepository.updateRSSHistoryItemResult = .success(Mock.items)
+        // Then
+        await XCTAssertError(Mock.error) {
+            // When
+            try await sut.changeFavouriteStatus(historyItemID: item.id, isFavourite: true)
         }
-        XCTAssertEqual(events, [])
     }
     
-    func test_changeFavouriteStatus_givenUpdateRSSHistoryItemFailure_thenThrows() throws {
+    func test_changeFavouriteStatus_givenUpdateRSSHistoryItemFailure_thenThrows() async throws {
         // Given
+        try await loadInitialChannels()
         let item = Mock.item2
-        repository.getRSSHistoryItemResult = .success(item)
-        repository.updateRSSHistoryItemResult = .failure(Mock.error)
-        // When
-        XCTAssertThrowsError(try sut.changeFavouriteStatus(historyItemID: item.id, isFavourite: true)) { error in
-            XCTAssertEqual(error as? MockError, Mock.error)
+        historyRepository.getRSSHistoryItemResult = .success(item)
+        historyRepository.updateRSSHistoryItemResult = .failure(Mock.error)
+        // Then
+        await XCTAssertError(Mock.error) {
+            // When
+            try await sut.changeFavouriteStatus(historyItemID: item.id, isFavourite: true)
         }
-        XCTAssertEqual(events, [])
     }
 }
+

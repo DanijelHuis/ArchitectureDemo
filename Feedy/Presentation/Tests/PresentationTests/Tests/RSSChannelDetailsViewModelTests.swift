@@ -10,13 +10,12 @@ import Combine
 import TestUtility
 @testable import Domain
 @testable import Presentation
-
+ 
 final class RSSChannelDetailsViewModelTests: XCTestCase {
-    private var getRSSHistoryItemsUseCase: MockGetRSSHistoryItemsUseCase!
+    private var getRSSChannelsUseCase: MockGetRSSChannelsUseCase!
     private var getRSSChannelUseCase: MockGetRSSChannelUseCase!
     private var changeHistoryItemFavouriteStatusUseCase: MockChangeHistoryItemFavouriteStatusUseCase!
-    private var updateLastReadItemIDUseCase: MockUpdateLastReadItemIDUseCase!
-    private var effectManager: SideEffectManager!
+    private var effectManager: EffectManager!
     private var coordinator: MockCoordinator!
     private var sut: RSSChannelDetailsViewModel!
     
@@ -69,10 +68,9 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     }
     
     @MainActor private func resetAll() {
-        getRSSHistoryItemsUseCase = .init()
+        getRSSChannelsUseCase = .init()
         getRSSChannelUseCase = .init()
         changeHistoryItemFavouriteStatusUseCase = .init()
-        updateLastReadItemIDUseCase = .init()
         effectManager = .init()
         coordinator = .init()
         sut = createSUT(historyItem: Mock.historyItem1, channel: Mock.channel1)
@@ -83,10 +81,9 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     }
     
     @MainActor override func tearDown() {
-        getRSSHistoryItemsUseCase = nil
+        getRSSChannelsUseCase = nil
         getRSSChannelUseCase = nil
         changeHistoryItemFavouriteStatusUseCase = nil
-        updateLastReadItemIDUseCase = nil
         effectManager = nil
         coordinator = nil
         sut = nil
@@ -95,10 +92,9 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     @MainActor func createSUT(historyItem: RSSHistoryItem, channel: RSSChannel) -> RSSChannelDetailsViewModel {
         .init(rssHistoryItem: historyItem,
               rssChannel: channel,
-              getRSSHistoryItemsUseCase: getRSSHistoryItemsUseCase,
+              getRSSChannelsUseCase: getRSSChannelsUseCase,
               getRSSChannelUseCase: getRSSChannelUseCase,
               changeHistoryItemFavouriteStatusUseCase: changeHistoryItemFavouriteStatusUseCase,
-              updateLastReadItemIDUseCase: updateLastReadItemIDUseCase,
               effectManager: effectManager,
               coordinator: coordinator)
     }
@@ -113,19 +109,20 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     
     // MARK: - observeEnvironment -
     
-    @MainActor func test_environment_givenMatchingHistoryItem_thenUpdatesStates() async throws {
+    @MainActor func test_observeEnvironment_givenMatchingHistoryItem_thenUpdatesStates() async throws {
         var historyItem1 = Mock.historyItem1
-        historyItem1.isFavourite.toggle()
-        // When: .update event
-        getRSSHistoryItemsUseCase.subject.send(RSSHistoryEvent(reason: .update, historyItems: [historyItem1]))
+        historyItem1.isFavourite.toggle()   // Just so we can test state if it changed
+        // When
+        getRSSChannelsUseCase.subject.send([.init(historyItem: Mock.historyItem1, channel: .success(Mock.channel1))])
         await effectManager.wait()
-        // Then: updates isFavourite
-        XCTAssertEqual(sut.state.isFavourite, !Mock.historyItem1.isFavourite)
+        // Then
+        XCTAssertEqual(stateCalls.count, 1)
+        XCTAssertEqual(sut.state.isFavourite, true)
     }
     
     @MainActor func test_environment_givenNoMatchingHistoryItem_thenDoesNothing() async throws {
-        // When: .update event
-        getRSSHistoryItemsUseCase.subject.send(RSSHistoryEvent(reason: .update, historyItems: [Mock.historyItem2]))
+        // When
+        getRSSChannelsUseCase.subject.send([.init(historyItem: Mock.historyItem2, channel: .success(Mock.channel2))])
         await effectManager.wait()
         // Then: does nothing
         XCTAssertEqual(stateCalls.count, 0)
@@ -136,9 +133,6 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     @MainActor func test_onFirstAppear_thenSetsInitialState() async throws {
         // Given
         getRSSChannelUseCase.getRSSChannelResult = .success(Mock.updatedChannel1)
-        // Calling onFirstAppear so it sets state to .loaded, that way we can test if second onFirstAppear sets state to .loading (otherwise we cannot test because initial state is .loading).
-        await sut.sendAsync(.onFirstAppear)
-        stateCalls.removeAll()
         // When
         await sut.sendAsync(.onFirstAppear)
         // Then: sets loading
@@ -150,10 +144,6 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     @MainActor func test_didInitiateRefresh_thenSetsInitialState() async throws {
         // Given
         getRSSChannelUseCase.getRSSChannelResult = .success(Mock.updatedChannel1)
-        // Calling onFirstAppear so it sets state to .loaded, that way we can test if didInitiateRefresh sets state to .loading (otherwise we cannot test because initial state is .loading).
-        await sut.sendAsync(.onFirstAppear)
-        XCTAssertEqual(sut.state.status.isLoaded, true)
-        stateCalls.removeAll()
         // When
         await sut.sendAsync(.didInitiateRefresh)
         // Then: doesn't set loading
@@ -185,7 +175,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
         XCTAssertEqual(coordinator.openRouteCalls.count, 0)
     }
     
-    @MainActor func test_loadRSSChannel_givenLoadedChannel_thenSetsNewChannel_thenUpdatesTitle() async throws {
+    @MainActor func test_loadRSSChannel_givenLoadedChannel_thenSetsNewChannel_thenMapsEverythingCorrectly() async throws {
         // Given
         getRSSChannelUseCase.getRSSChannelResult = .success(Mock.updatedChannel1)
         // When
@@ -212,11 +202,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
             
         default:
             XCTFail("Invalid status")
-        }
-        
-        XCTAssertEqual(updateLastReadItemIDUseCase.updateLastReadItemIDCalls.count, 1)
-        XCTAssertEqual(updateLastReadItemIDUseCase.updateLastReadItemIDCalls.first?.historyItemID, Mock.uuid1)
-        XCTAssertEqual(updateLastReadItemIDUseCase.updateLastReadItemIDCalls.first?.lastItemID, "item 1 guid")
+        }        
     }
     
     @MainActor func test_loadRSSChannel_givenLoadedChannelWithoutItems_thenSetsStatusToEmpty() async throws {
@@ -249,4 +235,5 @@ private extension RSSChannelDetailsViewModel.ViewStatus {
         }
     }
 }
+
 

@@ -21,11 +21,7 @@ struct Container {
     static var validateRSSChannelUseCase: ValidateRSSChannelUseCase  {
         DefaultValidateRSSChannelUseCase(repository: Container.rssRepository)
     }
-    
-    static var getRSSChannelsUseCase: GetRSSChannelsUseCase {
-        DefaultGetRSSChannelsUseCase(repository: Container.rssRepository)
-    }
-    
+        
     static var rssRepository: DefaultRSSRepository {
         DefaultRSSRepository(httpClient: Container.rssHTTPClient)
     }
@@ -36,5 +32,5 @@ struct Container {
     
     // MARK: - Shared -
     
-    static var sharedRSSHistoryManager = RSSHistoryManager(repository: DefaultRSSHistoryRepository(persistenceManager: UserDefaultsPersistenceManager()))
+    static var sharedRSSHistoryManager = RSSHistoryManager(historyRepository: DefaultRSSHistoryRepository(persistenceManager: UserDefaultsPersistenceManager()), rssRepository: rssRepository)
 }

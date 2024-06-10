@@ -8,5 +8,5 @@
 import Foundation
 
 public protocol RemoveRSSHistoryItemUseCase {
-    func removeRSSHistoryItem(_ historyItemID: UUID) throws
+    func removeRSSHistoryItem(_ historyItemID: UUID) async throws
 }

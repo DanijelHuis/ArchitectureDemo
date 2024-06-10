@@ -1,14 +1,14 @@
 //
 //  XCTest+Convenience.swift
-//  
 //
-//  Created by Danijel Huis on 04.05.2024..
+//
+//  Created by Danijel Huis on 10.06.2024..
 //
 
 import Foundation
 import XCTest
 
-extension XCTest {    
+extension XCTest {
     /// Similar to native XCTAssertThrowsError but async and takes equatable error as parameter instead of error closure.
     public func XCTAssertError<T, E: Error & Equatable>(
         _ expectedError: @escaping @autoclosure () -> E,
@@ -28,4 +28,3 @@ extension XCTest {
             }
         }
 }
-

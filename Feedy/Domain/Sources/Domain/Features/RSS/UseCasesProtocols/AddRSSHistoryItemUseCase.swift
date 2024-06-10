@@ -8,5 +8,5 @@
 import Foundation
 
 public protocol AddRSSHistoryItemUseCase {
-    func addRSSHistoryItem(channelURL: URL) throws
+    func addRSSHistoryItem(channelURL: URL) async throws
 }
