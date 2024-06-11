@@ -37,8 +37,7 @@ import CommonUI
             return .none
             
         case .details(let rssHistoryItem, let channel):
-            // @TODO
-            /*let viewModel = RSSChannelDetailsViewModel(rssHistoryItem: rssHistoryItem,
+            let viewModel = RSSChannelDetailsViewModel(rssHistoryItem: rssHistoryItem,
                                                        rssChannel: channel,
                                                        getRSSChannelsUseCase: Container.sharedRSSManager,
                                                        getRSSChannelUseCase: Container.rssRepository,
@@ -46,9 +45,7 @@ import CommonUI
                                                        effectManager: EffectManager(),
                                                        coordinator: AppCoordinator(navigator: navigator))
             
-            return .push(view: RSSChannelDetailsView(viewModel: viewModel))*/
-            return .none
-
+            return .push(view: RSSChannelDetailsView(viewModel: viewModel))
         }
     }
 }
