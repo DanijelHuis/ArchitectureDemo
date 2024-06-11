@@ -25,16 +25,14 @@ import CommonUI
             return .push(view: RSSChannelListView(viewModel: viewModel))
             
         case .add:
-            // @TODO
-            /*let viewModel = AddRSSChannelViewModel(validateRSSChannelUseCase: Container.validateRSSChannelUseCase,
+            let viewModel = AddRSSChannelViewModel(validateRSSChannelUseCase: Container.validateRSSChannelUseCase,
                                                    addRSSHistoryItemUseCase: Container.sharedRSSManager,
                                                    effectManager: EffectManager())
             viewModel.onFinished = {
                 navigator.pop()
             }
             
-            return .push(view: AddRSSChannelView(viewModel: viewModel))*/
-            return .none
+            return .push(view: AddRSSChannelView(viewModel: viewModel))
             
         case .details(let rssHistoryItem, let channel):
             let viewModel = RSSChannelDetailsViewModel(rssHistoryItem: rssHistoryItem,

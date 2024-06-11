@@ -10,7 +10,7 @@ import Combine
 import Domain
 import CommonUI
 
-@MainActor public final class RSSChannelDetailsViewModel {
+@Observable @MainActor public final class RSSChannelDetailsViewModel {
     // Dependencies
     private let getRSSChannelsUseCase: GetRSSChannelsUseCase
     private let getRSSChannelUseCase: GetRSSChannelUseCase
