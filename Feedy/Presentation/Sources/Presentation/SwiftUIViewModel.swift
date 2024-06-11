@@ -31,6 +31,9 @@ extension SwiftUIViewModel {
     }
 }
 
+public typealias SwiftUIViewModelOf<ViewModel: SwiftUIViewModel> = SwiftUIViewModel<ViewModel.State, ViewModel.Action>
+
+
 // MARK: - ObservableSwiftUIViewModel -
 
 /// The purpose of this is:
@@ -41,11 +44,11 @@ extension SwiftUIViewModel {
 ///   @ObservedObject let viewModel: any SwiftUIViewModel<SomeState, SomeAction>
 ///   So to avoid it we make proxy class. Without this we would have to make View generic which is unnecessary complication.
 @MainActor
-public class ObservableSwiftUIViewModel<State, Action>: ObservableObject {
+class ObservableSwiftUIViewModel<State, Action>: ObservableObject {
     private let viewModel: any SwiftUIViewModel<State, Action>
     private var cancellables: Set<AnyCancellable> = []
     
-    public init<T: SwiftUIViewModel<State, Action>>(viewModel: T) {
+    init<T: SwiftUIViewModel<State, Action>>(viewModel: T) {
         self.viewModel = viewModel
 
         viewModel.objectWillChange.sink { [weak self] value in
@@ -67,7 +70,7 @@ public class ObservableSwiftUIViewModel<State, Action>: ObservableObject {
     func sendAsync(_ action: Action) async { await viewModel.sendAsync(action) }
 }
 
-public typealias ObservableSwiftUIViewModelOf<ViewModel: SwiftUIViewModel> = ObservableSwiftUIViewModel<ViewModel.State, ViewModel.Action>
+typealias ObservableSwiftUIViewModelOf<ViewModel: SwiftUIViewModel> = ObservableSwiftUIViewModel<ViewModel.State, ViewModel.Action>
 
 extension ObservableSwiftUIViewModel {
     func binding<T>(_ keyPath: KeyPath<State, T>, send actionClosure: @escaping (T) -> Action) -> Binding<T> {

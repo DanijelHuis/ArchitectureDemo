@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-import Presentation
+import PresentationMVVM
 import CommonUI
 
 @MainActor struct RSSCoordinator {
@@ -22,20 +22,23 @@ import CommonUI
                                                     effectManager: EffectManager(),
                                                     coordinator: AppCoordinator(navigator: navigator))
             
-            return .push(view: RSSChannelListView(viewModel: .init(viewModel: viewModel)))
+            return .push(view: RSSChannelListView(viewModel: viewModel))
             
         case .add:
-            let viewModel = AddRSSChannelViewModel(validateRSSChannelUseCase: Container.validateRSSChannelUseCase,
+            // @TODO
+            /*let viewModel = AddRSSChannelViewModel(validateRSSChannelUseCase: Container.validateRSSChannelUseCase,
                                                    addRSSHistoryItemUseCase: Container.sharedRSSManager,
                                                    effectManager: EffectManager())
             viewModel.onFinished = {
                 navigator.pop()
             }
             
-            return .push(view: AddRSSChannelView(viewModel: .init(viewModel: viewModel)))
+            return .push(view: AddRSSChannelView(viewModel: viewModel))*/
+            return .none
             
         case .details(let rssHistoryItem, let channel):
-            let viewModel = RSSChannelDetailsViewModel(rssHistoryItem: rssHistoryItem,
+            // @TODO
+            /*let viewModel = RSSChannelDetailsViewModel(rssHistoryItem: rssHistoryItem,
                                                        rssChannel: channel,
                                                        getRSSChannelsUseCase: Container.sharedRSSManager,
                                                        getRSSChannelUseCase: Container.rssRepository,
@@ -43,7 +46,9 @@ import CommonUI
                                                        effectManager: EffectManager(),
                                                        coordinator: AppCoordinator(navigator: navigator))
             
-            return .push(view: RSSChannelDetailsView(viewModel: .init(viewModel: viewModel)))
+            return .push(view: RSSChannelDetailsView(viewModel: viewModel))*/
+            return .none
+
         }
     }
 }

@@ -12,8 +12,8 @@ import CommonUI
 @MainActor public struct RSSChannelDetailsView: View {
     @ObservedObject private var viewModel: ObservableSwiftUIViewModelOf<RSSChannelDetailsViewModel>
     
-    public init(viewModel: ObservableSwiftUIViewModelOf<RSSChannelDetailsViewModel>) {
-        self.viewModel = viewModel
+    public init(viewModel: any SwiftUIViewModelOf<RSSChannelDetailsViewModel>) {
+        self.viewModel = .init(viewModel: viewModel)
     }
     
     public var body: some View {

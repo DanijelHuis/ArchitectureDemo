@@ -12,9 +12,9 @@ import CommonUI
     @ObservedObject private var viewModel: ObservableSwiftUIViewModelOf<AddRSSChannelViewModel>
     @FocusState private var isURLTextFieldFocused: Bool
     
-    public init(viewModel: ObservableSwiftUIViewModelOf<AddRSSChannelViewModel>) {
-        self.viewModel = viewModel
-        self.isURLTextFieldFocused = isURLTextFieldFocused
+    public init(viewModel: any SwiftUIViewModelOf<AddRSSChannelViewModel>) {
+        self.viewModel = .init(viewModel: viewModel)
+        self.isURLTextFieldFocused = true
     }
     
     public var body: some View {
@@ -57,7 +57,7 @@ import CommonUI
                 .accessibilityIdentifier("add_button")
                 
                 // @TODO just for testing
-                /*VStack {
+                VStack {
                     Button("Sky news") {
                         viewModel.send(.didChangeChannelURLText("https://feeds.skynews.com/feeds/rss/world.xml"))
                     }
@@ -70,7 +70,7 @@ import CommonUI
                     Button("Index.hr") {
                         viewModel.send(.didChangeChannelURLText("https://index.hr/rss"))
                     }
-                }*/
+                }
             }
             .padding(.spacing.quad)
             .disabled(viewModel.state.status == .validating)
