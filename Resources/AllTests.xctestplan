@@ -28,13 +28,6 @@
     },
     {
       "target" : {
-        "containerPath" : "container:Feedy\/Presentation",
-        "identifier" : "PresentationTests",
-        "name" : "PresentationTests"
-      }
-    },
-    {
-      "target" : {
         "containerPath" : "container:Feedy\/Data",
         "identifier" : "DataTests",
         "name" : "DataTests"
@@ -56,9 +49,16 @@
     },
     {
       "target" : {
-        "containerPath" : "container:Feedy\/Infrastructure\/Localization",
-        "identifier" : "LocalizationTests",
-        "name" : "LocalizationTests"
+        "containerPath" : "container:Feedy\/CommonUI",
+        "identifier" : "CommonUITests",
+        "name" : "CommonUITests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Feedy\/PresentationMVI",
+        "identifier" : "PresentationMVITests",
+        "name" : "PresentationMVITests"
       }
     }
   ],

@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 import SafariServices
 import SwiftUI
-import Presentation
 import CommonUI
 
 @MainActor struct CommonCoordinator {

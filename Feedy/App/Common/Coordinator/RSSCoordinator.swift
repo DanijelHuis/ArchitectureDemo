@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+// Choose between PresentationMVI or PresentationMVVM.
 import PresentationMVVM
 import CommonUI
 

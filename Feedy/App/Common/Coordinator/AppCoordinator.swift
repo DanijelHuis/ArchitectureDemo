@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUI
-import Presentation
 import CommonUI
 
 /// Every view is supposed to create its own instance of AppCoordinator, that way if something needs to be persisted in child coordinator, its lifecycle will be tied to the view.
