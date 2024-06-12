@@ -85,10 +85,10 @@ import CommonUI
     
     // MARK: - View state -
     let title = "rss_list_title".localized
-    var channels = [RSSChannelResponse]()
-    var didFail = false
-    var isLoading = false
-    var isShowingFavourites = false
+    private var channels = [RSSChannelResponse]()
+    private var didFail = false
+    private var isLoading = false
+    private(set) var isShowingFavourites = false
     
     var status: ViewStatus {
         if isLoading {

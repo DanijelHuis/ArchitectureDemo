@@ -11,16 +11,13 @@ import Domain
 import TestUtility
 @testable import PresentationMVVM
 
-// @TODO
-/*
 final class AddRSSChannelViewModelTests: XCTestCase {
     private var validateRSSChannelUseCase: MockValidateRSSChannelUseCase!
     private var addRSSHistoryItemUseCase: MockAddRSSHistoryItemUseCase!
     private var coordinator: MockCoordinator!
     private var effectManager: EffectManager!
     private var sut: AddRSSChannelViewModel!
-    
-    private var stateCalls = [AddRSSChannelViewModel.State]()
+    private var observationTracker: KeyPathObservationTracker<AddRSSChannelViewModel, AddRSSChannelViewModel.ViewStatus>!
     private var cancellables: Set<AnyCancellable> = []
     private var didFinish = false
     
@@ -35,12 +32,8 @@ final class AddRSSChannelViewModelTests: XCTestCase {
         addRSSHistoryItemUseCase = .init()
         effectManager = .init()
         sut = .init(validateRSSChannelUseCase: validateRSSChannelUseCase, addRSSHistoryItemUseCase: addRSSHistoryItemUseCase, effectManager: effectManager)
-        
-        sut.$state.sink { [weak self] state in
-            self?.stateCalls.append(state)
-        }.store(in: &cancellables)
-        stateCalls.removeAll()
-                
+        observationTracker = .init(object: sut, keyPath: \.status)
+
         sut.onFinished = { [weak self] in
             self?.didFinish = true
         }
@@ -50,49 +43,51 @@ final class AddRSSChannelViewModelTests: XCTestCase {
         validateRSSChannelUseCase = nil
         addRSSHistoryItemUseCase = nil
         effectManager = nil
+        observationTracker = nil
         sut = nil
     }
     
     @MainActor private func setToErrorState() async {
         validateRSSChannelUseCase.validateRSSChannelResult = false
-        await sut.sendAsync(.didTapAddButton)
-        XCTAssertEqual(sut.state.status.isError, true)
+        sut.didTapAddButton()
+        await effectManager.wait()
+        XCTAssertEqual(sut.status.isError, true)
     }
         
     @MainActor func test_init_thenSetsStateCorrectly() {
-        XCTAssertEqual(sut.state.status, .idle)
-        XCTAssertEqual(sut.state.channelURL, "")
-        XCTAssertEqual(sut.state.title, "rss_add_title".localizedOrRandom)
-        XCTAssertEqual(sut.state.placeholder, "rss_add_url_placeholder".localizedOrRandom)
-        XCTAssertEqual(sut.state.buttonTitle, "rss_add_button".localizedOrRandom)
+        XCTAssertEqual(sut.status, .idle)
+        XCTAssertEqual(sut.channelURL, "")
+        XCTAssertEqual(sut.title, "rss_add_title".localizedOrRandom)
+        XCTAssertEqual(sut.placeholder, "rss_add_url_placeholder".localizedOrRandom)
+        XCTAssertEqual(sut.buttonTitle, "rss_add_button".localizedOrRandom)
     }
     
-    @MainActor func test_didChangeChannelURLText_thenChangesURL() async throws {
+    @MainActor func test_setChannelURL_thenChangesURL() async throws {
         // When
-        await sut.sendAsync(.didChangeChannelURLText(Mock.url))
+        sut.channelURL = Mock.url
         // Then
-        XCTAssertEqual(sut.state.channelURL, Mock.url)
+        XCTAssertEqual(sut.channelURL, Mock.url)
     }
     
     @MainActor func test_didChangeChannelURLText_givenErrorState_thenChangesStateToIdle() async throws {
         // Given
         await setToErrorState()
         // When
-        await sut.sendAsync(.didChangeChannelURLText(Mock.url))
+        sut.channelURL = Mock.url
         // Then
-        XCTAssertEqual(sut.state.status, .idle)
+        XCTAssertEqual(sut.status, .idle)
     }
     
     @MainActor func test_didTapAddButton_givenEverythingSucceeds_thenAddsHistoryItem_thenCallsOnFinish() async throws {
         // Given
         validateRSSChannelUseCase.validateRSSChannelResult = true
         addRSSHistoryItemUseCase.addRSSHistoryItemError = nil
-        await sut.sendAsync(.didChangeChannelURLText(Mock.url))
-        stateCalls.removeAll()
+        sut.channelURL = Mock.url
         // When
-        await sut.sendAsync(.didTapAddButton)
+        sut.didTapAddButton()
+        await effectManager.wait()
         // Then: check that it sets validating state
-        XCTAssertEqual(stateCalls.map({ $0.status.isValidating }).contains(true), true)
+        XCTAssertEqual(observationTracker.getValues().map({ $0.isValidating }).contains(true), true)
         // Then check that it adds history item
         XCTAssertEqual(addRSSHistoryItemUseCase.addRSSHistoryItemCalls.count, 1)
         XCTAssertEqual(addRSSHistoryItemUseCase.addRSSHistoryItemCalls.first?.absoluteString, Mock.url)
@@ -104,12 +99,13 @@ final class AddRSSChannelViewModelTests: XCTestCase {
         // Given
         validateRSSChannelUseCase.validateRSSChannelResult = true
         addRSSHistoryItemUseCase.addRSSHistoryItemError = nil
-        await sut.sendAsync(.didChangeChannelURLText(Mock.invalidURL))
+        sut.channelURL = Mock.invalidURL
         // When
-        await sut.sendAsync(.didTapAddButton)
+        sut.didTapAddButton()
+        await effectManager.wait()
         // Then
         XCTAssertEqual(didFinish, false)
-        XCTAssertEqual(sut.state.status, .error(message: "rss_add_invalid_url".localizedOrRandom))
+        XCTAssertEqual(sut.status, .error(message: "rss_add_invalid_url".localizedOrRandom))
     }
     
     
@@ -117,36 +113,39 @@ final class AddRSSChannelViewModelTests: XCTestCase {
         // Given
         validateRSSChannelUseCase.validateRSSChannelResult = false
         addRSSHistoryItemUseCase.addRSSHistoryItemError = nil
-        await sut.sendAsync(.didChangeChannelURLText(Mock.url))
+        sut.channelURL = Mock.url
         // When
-        await sut.sendAsync(.didTapAddButton)
+        sut.didTapAddButton()
+        await effectManager.wait()
         // Then
         XCTAssertEqual(didFinish, false)
-        XCTAssertEqual(sut.state.status, .error(message: "rss_add_failed_to_validate".localizedOrRandom))
+        XCTAssertEqual(sut.status, .error(message: "rss_add_failed_to_validate".localizedOrRandom))
     }
     
     @MainActor func test_didTapAddButton_givenAddFails_thenSetsErrorState_thenDoesntCallOnFinish() async throws {
         // Given
         validateRSSChannelUseCase.validateRSSChannelResult = true
         addRSSHistoryItemUseCase.addRSSHistoryItemError = Mock.addError
-        await sut.sendAsync(.didChangeChannelURLText(Mock.url))
+        sut.channelURL = Mock.url
         // When
-        await sut.sendAsync(.didTapAddButton)
+        sut.didTapAddButton()
+        await effectManager.wait()
         // Then
         XCTAssertEqual(didFinish, false)
-        XCTAssertEqual(sut.state.status, .error(message: "rss_add_failed_to_add".localizedOrRandom))
+        XCTAssertEqual(sut.status, .error(message: "rss_add_failed_to_add".localizedOrRandom))
     }
     
     @MainActor func test_didTapAddButton_givenAddFailsWithURLAlreadyExists_thenSetsErrorState_thenDoesntCallOnFinish() async throws {
         // Given
         validateRSSChannelUseCase.validateRSSChannelResult = true
         addRSSHistoryItemUseCase.addRSSHistoryItemError = RSSHistoryRepositoryError.urlAlreadyExists
-        await sut.sendAsync(.didChangeChannelURLText(Mock.url))
+        sut.channelURL = Mock.url
         // When
-        await sut.sendAsync(.didTapAddButton)
+        sut.didTapAddButton()
+        await effectManager.wait()
         // Then
         XCTAssertEqual(didFinish, false)
-        XCTAssertEqual(sut.state.status, .error(message: "rss_add_url_exists".localizedOrRandom))
+        XCTAssertEqual(sut.status, .error(message: "rss_add_url_exists".localizedOrRandom))
     }
 }
 
@@ -167,4 +166,4 @@ private extension AddRSSChannelViewModel.ViewStatus {
         }
     }
 }
-*/
+

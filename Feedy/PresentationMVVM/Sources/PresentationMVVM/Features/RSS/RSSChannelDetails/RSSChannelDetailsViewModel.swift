@@ -77,9 +77,9 @@ import CommonUI
     
     // MARK: - View state -
     
-    var rssHistoryItem: RSSHistoryItem
-    var rssChannel: RSSChannel
-    var isLoading: Bool = false
+    private var rssHistoryItem: RSSHistoryItem
+    private var rssChannel: RSSChannel
+    private var isLoading: Bool = false
     var title: String? { rssChannel.title }
     var isFavourite: Bool { rssHistoryItem.isFavourite }
             

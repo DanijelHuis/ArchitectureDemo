@@ -59,8 +59,16 @@ import Domain
     let title = "rss_add_title".localized
     let placeholder = "rss_add_url_placeholder".localized
     let buttonTitle = "rss_add_button".localized
-    var channelURL = ""
-    var status = ViewStatus.idle
+    private(set) var status = ViewStatus.idle
+    
+    // We allow channelURL to be modified from outside, this is acceptable in original MVVM even though we usually didn't allow it.
+    var channelURL = "" {
+        didSet {
+            // If error state and text is changed then put it into idle (that removes error message).
+            guard case .error = status else { return }
+            status = .idle
+        }
+    }
 }
 
 // MARK: - State & Action -

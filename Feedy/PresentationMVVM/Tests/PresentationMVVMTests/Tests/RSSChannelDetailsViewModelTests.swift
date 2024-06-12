@@ -11,8 +11,6 @@ import TestUtility
 @testable import Domain
 @testable import PresentationMVVM
  
-// @TODO
-/*
 final class RSSChannelDetailsViewModelTests: XCTestCase {
     private var getRSSChannelsUseCase: MockGetRSSChannelsUseCase!
     private var getRSSChannelUseCase: MockGetRSSChannelUseCase!
@@ -20,8 +18,8 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     private var effectManager: EffectManager!
     private var coordinator: MockCoordinator!
     private var sut: RSSChannelDetailsViewModel!
-    
-    private var stateCalls = [RSSChannelDetailsViewModel.State]()
+    private var observationTracker: KeyPathObservationTracker<RSSChannelDetailsViewModel, RSSChannelDetailsViewModel.ViewStatus>!
+
     private var cancellables: Set<AnyCancellable> = []
     private var didFinish = false
     
@@ -76,10 +74,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
         effectManager = .init()
         coordinator = .init()
         sut = createSUT(historyItem: Mock.historyItem1, channel: Mock.channel1)
-        sut.$state.sink { [weak self] state in
-            self?.stateCalls.append(state)
-        }.store(in: &cancellables)
-        stateCalls.removeAll()
+        observationTracker = .init(object: sut, keyPath: \.status)
     }
     
     @MainActor override func tearDown() {
@@ -89,6 +84,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
         effectManager = nil
         coordinator = nil
         sut = nil
+        observationTracker = nil
     }
     
     @MainActor func createSUT(historyItem: RSSHistoryItem, channel: RSSChannel) -> RSSChannelDetailsViewModel {
@@ -105,30 +101,32 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     
     @MainActor func test_init_thenSetsInitialState() async throws {
         // Then
-        XCTAssertEqual(sut.state.title, Mock.channel1.title)
-        XCTAssertEqual(sut.state.isFavourite, true)
+        XCTAssertEqual(sut.title, Mock.channel1.title)
+        XCTAssertEqual(sut.isFavourite, true)
     }
     
     // MARK: - observeEnvironment -
     
     @MainActor func test_observeEnvironment_givenMatchingHistoryItem_thenUpdatesStates() async throws {
         var historyItem1 = Mock.historyItem1
-        historyItem1.isFavourite.toggle()   // Just so we can test state if it changed
+        historyItem1.isFavourite = false
         // When
-        getRSSChannelsUseCase.subject.send([.init(historyItem: Mock.historyItem1, channel: .success(Mock.channel1))])
+        getRSSChannelsUseCase.subject.send([.init(historyItem: historyItem1, channel: .success(Mock.channel1))])
         await effectManager.wait()
         // Then
-        XCTAssertEqual(stateCalls.count, 1)
-        XCTAssertEqual(sut.state.isFavourite, true)
+        XCTAssertEqual(sut.isFavourite, false)  // Original item is true, this means it changed it.
     }
     
     @MainActor func test_environment_givenNoMatchingHistoryItem_thenDoesNothing() async throws {
+        var historyItem1 = Mock.historyItem2
+        historyItem1.isFavourite = false
         // When
         getRSSChannelsUseCase.subject.send([.init(historyItem: Mock.historyItem2, channel: .success(Mock.channel2))])
         await effectManager.wait()
         // Then: does nothing
-        XCTAssertEqual(stateCalls.count, 0)
+        XCTAssertEqual(sut.isFavourite, true) // Original item is true, this means it didn't changed it.
     }
+    
     
     // MARK: - Actions -
     
@@ -136,27 +134,29 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
         // Given
         getRSSChannelUseCase.getRSSChannelResult = .success(Mock.updatedChannel1)
         // When
-        await sut.sendAsync(.onFirstAppear)
+        sut.onFirstAppear()
+        await effectManager.wait()
         // Then: sets loading
-        XCTAssertEqual(stateCalls.map({ $0.status }).contains(.loading(text: "common_loading".localizedOrRandom)), true)
+        XCTAssertEqual(observationTracker.getValues().contains(.loading(text: "common_loading".localizedOrRandom)), true)
         // Then: checking that it loaded new channel and set it up, other stuff is tested elsewhere
-        XCTAssertEqual(sut.state.title, Mock.updatedChannel1.title)
+        XCTAssertEqual(sut.title, Mock.updatedChannel1.title)
     }
     
     @MainActor func test_didInitiateRefresh_thenSetsInitialState() async throws {
         // Given
         getRSSChannelUseCase.getRSSChannelResult = .success(Mock.updatedChannel1)
         // When
-        await sut.sendAsync(.didInitiateRefresh)
+        await sut.didInitiateRefresh()
         // Then: doesn't set loading
-        XCTAssertEqual(stateCalls.map({ $0.status }).contains(.loading(text: "common_loading".localizedOrRandom)), false)
+        XCTAssertEqual(observationTracker.getValues().contains(.loading(text: "common_loading".localizedOrRandom)), false)
         // Then: checking that it loaded new channel and set it up, other stuff is tested elsewhere
-        XCTAssertEqual(sut.state.title, Mock.updatedChannel1.title)
+        XCTAssertEqual(sut.title, Mock.updatedChannel1.title)
     }
     
     @MainActor func test_toggleFavourites_thenTogglesFavourites() async throws {
         // When
-        await sut.sendAsync(.toggleFavourites)
+        sut.toggleFavourites()
+        await effectManager.wait()
         // Then
         XCTAssertEqual(changeHistoryItemFavouriteStatusUseCase.changeFavouriteStatusCalls.count, 1)
         XCTAssertEqual(changeHistoryItemFavouriteStatusUseCase.changeFavouriteStatusCalls.first?.historyItemID, Mock.uuid1)
@@ -165,14 +165,16 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     
     @MainActor func test_didTapOnRSSItem_thenCallsCoordinator() async throws {
         // When
-        await sut.sendAsync(.didTapOnRSSItem(Mock.link))
+        sut.didTapOnRSSItem(link: Mock.link)
+        await effectManager.wait()
         // Then
         XCTAssertEqual(coordinator.openRouteCalls, [.common(.safari(url: Mock.link))])
     }
     
     @MainActor func test_didTapOnRSSItem_givenNilLink_thenDoesntCallCoordinator() async throws {
         // When
-        await sut.sendAsync(.didTapOnRSSItem(nil))
+        sut.didTapOnRSSItem(link: nil)
+        await effectManager.wait()
         // Then
         XCTAssertEqual(coordinator.openRouteCalls.count, 0)
     }
@@ -181,11 +183,11 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
         // Given
         getRSSChannelUseCase.getRSSChannelResult = .success(Mock.updatedChannel1)
         // When
-        await sut.sendAsync(.didInitiateRefresh)
+        await sut.didInitiateRefresh()
         // Then
-        XCTAssertEqual(sut.state.title, "updated title")
-        XCTAssertEqual(sut.state.status.isLoaded, true)
-        switch sut.state.status {
+        XCTAssertEqual(sut.title, "updated title")
+        XCTAssertEqual(sut.status.isLoaded, true)
+        switch sut.status {
         case .loaded(let items):
             XCTAssertEqual(items.count, 2)
             XCTAssertEqual(items.first?.id, "item 1 guid")
@@ -211,20 +213,20 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
         // Given
         getRSSChannelUseCase.getRSSChannelResult = .success(Mock.updatedChannel1WithoutItems)
         // When
-        await sut.sendAsync(.didInitiateRefresh)
+        await sut.didInitiateRefresh()
         // Then
-        XCTAssertEqual(sut.state.title, "updated title")
-        XCTAssertEqual(sut.state.status, .empty(text: "rss_details_no_items".localizedOrRandom))
+        XCTAssertEqual(sut.title, "updated title")
+        XCTAssertEqual(sut.status, .empty(text: "rss_details_no_items".localizedOrRandom))
     }
     
     @MainActor func test_loadRSSChannel_givenLoadChannelFails_thenUsesCurrentChannel_thenDoesntSetErrorStatus() async throws {
         // Given
         getRSSChannelUseCase.getRSSChannelResult = .failure(Mock.channelError)
         // When
-        await sut.sendAsync(.didInitiateRefresh)
+        await sut.didInitiateRefresh()
         // Then
-        XCTAssertEqual(sut.state.title, "channel1")
-        XCTAssertEqual(sut.state.status.isLoaded, true)
+        XCTAssertEqual(sut.title, "channel1")
+        XCTAssertEqual(sut.status.isLoaded, true)
     }
 }
 
@@ -239,4 +241,4 @@ private extension RSSChannelDetailsViewModel.ViewStatus {
 }
 
 
-*/
+

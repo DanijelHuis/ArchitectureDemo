@@ -20,7 +20,6 @@ final class RSSChannelListViewModelTests: XCTestCase {
     private var observationTracker: KeyPathObservationTracker<RSSChannelListViewModel, RSSChannelListViewModel.ViewStatus>!
     private var cancellables: Set<AnyCancellable> = []
     
-    
     private struct Mock {
         static let uuid1 = UUID()
         static let uuid2 = UUID()
@@ -66,6 +65,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         coordinator = nil
         effectManager = nil
         sut = nil
+        observationTracker = nil
     }
     
     // This will set channels on the state (it invokes getRSSChannelsUseCase).
