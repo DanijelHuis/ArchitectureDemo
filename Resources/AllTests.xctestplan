@@ -60,6 +60,13 @@
         "identifier" : "PresentationMVITests",
         "name" : "PresentationMVITests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Feedy\/PresentationMVVM",
+        "identifier" : "PresentationMVVMTests",
+        "name" : "PresentationMVVMTests"
+      }
     }
   ],
   "version" : 1
