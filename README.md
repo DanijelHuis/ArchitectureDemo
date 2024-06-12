@@ -2,7 +2,7 @@ This demo is meant to accompany my CV and provide insight into my code and how I
 
 Demo app uses principles from clean architecture for model part. For UI part, same code is implemented in MVVM and MVI architectures (I will add TCA implementation in near future). There are two packages:
 - PresentationMVI: Unidirectional state-action based MVI implementation adapted for SwiftUI and easy previews/snapshot testing.
-- PresentationMVVM: Classic MVVM used in iOS. This uses new @Observable (iOS 17+). 
+- PresentationMVVM: Classic MVVM used in iOS. This uses new @Observable (iOS 17+).  
 To switch between UI implementations, open RSSCoordinator.swift and specify "import PresentationMVI" or "import PresentationMVVM".
 
 The app is a simple RSS reader, it allows users to add RSS feeds and view their contents. It also allows for adding favorites.
