@@ -1,12 +1,12 @@
 This demo is meant to accompany my CV and provide insight into my code and how I structure and test apps. 
 
 Demo app uses clean architecture for model part. For UI part, same code is implemented in MVVM and MVI architectures (I will add TCA implementation in near future). There are two packages:
-- PresentationMVI: Unidirectional state-action based MVI implementation adapted for SwiftUI and easy previews/snapshot testing.
-- PresentationMVVM: Classic MVVM used in iOS. This uses new @Observable (iOS 17+).  
+- PresentationMVI: Unidirectional state-action based MVI implementation adapted for SwiftUI and easy previews/snapshot testing. It uses new @Observable (iOS 17+).
+- PresentationMVVM: Classic MVVM used in iOS. It uses new @Observable (iOS 17+).  
 
 To switch between UI implementations, open RSSCoordinator.swift and specify "import PresentationMVI" or "import PresentationMVVM".
 
-The app is a simple RSS reader, it allows users to add RSS feeds and view their contents. It also allows for adding favorites.
+The app is a simple RSS reader, it allows users to add/delete RSS feeds and view their contents. It also allows adding favorites.
 
 ## Clean architecture & modularization
 I've split the demo app into multiple layers: infrastructure, domain, data, and presentation. The goals are:
@@ -20,7 +20,7 @@ Note that this kind of modularization won't help much regarding build times or s
 ## Combine, async/await, asyncSequence
 I use async/await, async sequence, structured concurrency and actor isolation everywhere I can. I very much prefer the top-down readability of async/await (AsyncSequence) code compared to closure-based combine. I also prefer error handling, cancellation propagation and the composability of async throwable functions. Combine currently doesn't support actor isolation which is also a big downside.
 
-All that said, Combine is still needed if we need multiple subscribers or some advanced operations that AsyncSequence currently doesn't offer. Also, Combine is very convenient to use as data binding for SwiftUI.
+All that said, Combine is still needed if we need multiple subscribers or some advanced operations that AsyncSequence currently doesn't offer. In the app I use Combine in RSSManager because I need multiple subscribers (list and details) but I subscribe to it using AsyncPublisher (AsyncSequence) so everything stays actor protected and easy to unit test.
 
 ## Unit testing, snapshot testing, UI testing
 On my previous project, we started using snapshot testing alongside unit testing. I find it very powerful and very easy to write. It has already proven its use many times in my previous project, e.g. we found some UI bugs when updating app to iOS 17. All views and components in the demo app have snapshot tests. Below is an example of snapshot tests for RSS list in all 4 states (loading, empty, loaded, error).
