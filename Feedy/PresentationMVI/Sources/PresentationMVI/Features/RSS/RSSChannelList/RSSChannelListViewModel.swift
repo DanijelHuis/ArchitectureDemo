@@ -21,11 +21,7 @@ public final class RSSChannelListViewModel: SwiftUIViewModel {
     public private(set) var state: State = State(channels: [])
     // Private
     private var cancellables: Set<AnyCancellable> = []
-    
-    deinit {
-        print("!!!Deinit \(type(of: self))")   //@DEBUG
-    }
-    
+        
     public init(getRSSChannelsUseCase: GetRSSChannelsUseCase, removeRSSHistoryItemUseCase: RemoveRSSHistoryItemUseCase, effectManager: EffectManager, coordinator: Coordinator) {
         self.getRSSChannelsUseCase = getRSSChannelsUseCase
         self.removeRSSHistoryItemUseCase = removeRSSHistoryItemUseCase

@@ -25,10 +25,6 @@ public final class AddRSSChannelViewModel: SwiftUIViewModel {
         self.effectManager = effectManager
     }
     
-    deinit {
-        print("Deinit \(type(of: self))")   //@DEBUG
-    }
-    
     public func send(_ action: Action) {
         switch action {
             

@@ -57,7 +57,7 @@ import CommonUI
                 .accessibilityIdentifier("add_button")
                 
                 // @TODO just for testing
-                /*VStack {
+                VStack {
                     Button("Sky news") {
                         // In MVVM it is "acceptable" to mutate property directly from view, same as two-way binding.
                         viewModel.channelURL = "https://feeds.skynews.com/feeds/rss/world.xml"
@@ -71,7 +71,7 @@ import CommonUI
                     Button("Index.hr") {
                         viewModel.channelURL = "https://index.hr/rss"
                     }
-                }*/
+                }
             }
             .padding(.spacing.quad)
             .disabled(viewModel.status == .validating)
