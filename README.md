@@ -1,15 +1,12 @@
 This demo is meant to accompany my CV and provide insight into my code and how I structure and test apps. 
 
-Demo app uses principles from clean architecture for model part. For UI part, same code is implemented in MVVM and MVI architectures (I will add TCA implementation in near future). There are two packages:
+Demo app uses clean architecture for model part. For UI part, same code is implemented in MVVM and MVI architectures (I will add TCA implementation in near future). There are two packages:
 - PresentationMVI: Unidirectional state-action based MVI implementation adapted for SwiftUI and easy previews/snapshot testing.
-- PresentationMVVM: Classic MVVM used in iOS. This uses new @Observable (iOS 17+).
+- PresentationMVVM: Classic MVVM used in iOS. This uses new @Observable (iOS 17+).  
+
 To switch between UI implementations, open RSSCoordinator.swift and specify "import PresentationMVI" or "import PresentationMVVM".
 
 The app is a simple RSS reader, it allows users to add RSS feeds and view their contents. It also allows for adding favorites.
-
-## MVVM vs. MVI vs. TCA
-I've summarized all the differences between architectures and put it into table below. Note that this comparison focuses on UI sides of these architecutres.
-![architecture_comparison](https://github.com/DanijelHuis/ArchitectureDemo/assets/5382135/3562f072-14a8-422a-921a-7a93f60f9bd0)
 
 ## Clean architecture & modularization
 I've split the demo app into multiple layers: infrastructure, domain, data, and presentation. The goals are:
@@ -47,3 +44,8 @@ The app uses SwiftUI which works very well with unidrectional data flow. Some no
 
 ## Dependency injection
 I use constructor dependency injection. Previously I've used *Factory* , it is useful and convenient but construction injection works well for this demo.
+
+## MVVM vs. MVI vs. TCA
+I've summarized all the differences between architectures and put it into table below. Note that this comparison focuses on UI sides of these architecutres.
+![architecture_comparison](https://github.com/DanijelHuis/ArchitectureDemo/assets/5382135/3562f072-14a8-422a-921a-7a93f60f9bd0)
+
