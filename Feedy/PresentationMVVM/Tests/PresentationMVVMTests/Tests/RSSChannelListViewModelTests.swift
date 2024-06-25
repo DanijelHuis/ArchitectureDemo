@@ -9,6 +9,7 @@ import XCTest
 @testable import Domain
 import TestUtility
 import Combine
+import CommonUI
 @testable import PresentationMVVM
 
 final class RSSChannelListViewModelTests: XCTestCase {
@@ -18,7 +19,6 @@ final class RSSChannelListViewModelTests: XCTestCase {
     private var effectManager: EffectManager!
     private var sut: RSSChannelListViewModel!
     private var observationTracker: KeyPathObservationTracker<RSSChannelListViewModel, RSSChannelListViewModel.ViewStatus>!
-    private var cancellables: Set<AnyCancellable> = []
     
     // This is need to test async code.
     override func invokeTest() {

@@ -44,20 +44,20 @@ import Foundation
     
     /// Spawns tasks and runs closure in it. Task is stored so it can be waited on and cancelled.
     /// For streams better use runStream, that way when we call wait it will wait only non-stream tasks (we don't want to wait on indefinite streams).
-    @discardableResult func runTask(id: String = UUID().uuidString, closure: @escaping () async -> Void) -> Task<Void, Never> {
+    @discardableResult public func runTask(id: String = UUID().uuidString, closure: @escaping () async -> Void) -> Task<Void, Never> {
         run(id: id, type: .task, closure: closure)
     }
     
     /// Cancels all tasks, doesn't cancel streams.
-    func cancelTasks() {
+    public func cancelTasks() {
         cancelTasks(type: .task)
     }
     
     /// Waits until all tasks are finished.
-    func wait() async {
+    public func wait() async {
         await withTaskCancellationHandler {
             // Note: this will not "run" tasks one after another, it will just wait until all are done. These tasks are running concurrently.
-            for task in tasks.values.map({ $0.task }) {
+            for task in tasks.values.filter({ $0.type == .task }).map({ $0.task }) {
                 await task.value
             }
         } onCancel: {
@@ -71,12 +71,12 @@ import Foundation
     
     /// Spawns tasks and runs closure in it. Task is stored so it can be cancelled.
     /// This is the same as runTask but it is marked as stream so when we call `wait`, we don't wait for indefinite streams to finish.
-    @discardableResult func runStream(id: String = UUID().uuidString, closure: @escaping () async -> Void) -> Task<Void, Never> {
+    @discardableResult public func runStream(id: String = UUID().uuidString, closure: @escaping () async -> Void) -> Task<Void, Never> {
         run(id: id, type: .stream, closure: closure)
     }
     
     /// Cancels all streams.
-    func cancelStreams() {
+    public func cancelStreams() {
         cancelTasks(type: .stream)
     }
 }

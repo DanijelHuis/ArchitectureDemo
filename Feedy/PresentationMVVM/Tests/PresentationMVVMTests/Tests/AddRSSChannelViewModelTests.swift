@@ -9,6 +9,7 @@ import XCTest
 import Combine
 import Domain
 import TestUtility
+import CommonUI
 @testable import PresentationMVVM
 
 final class AddRSSChannelViewModelTests: XCTestCase {
@@ -18,7 +19,6 @@ final class AddRSSChannelViewModelTests: XCTestCase {
     private var effectManager: EffectManager!
     private var sut: AddRSSChannelViewModel!
     private var observationTracker: KeyPathObservationTracker<AddRSSChannelViewModel, AddRSSChannelViewModel.ViewStatus>!
-    private var cancellables: Set<AnyCancellable> = []
     private var didFinish = false
     
     private struct Mock {

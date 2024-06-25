@@ -20,12 +20,12 @@ import XCTest
 ///      sut.name = "3"  // values stores "2"
 ///      sut.name = "4"  // values stores "3"
 ///      let values = tracker.getValues()    // returns ["3", "4"]
-final class KeyPathObservationTracker<T, V> where T: AnyObject, T: Observable {
+public final class KeyPathObservationTracker<T, V> where T: AnyObject, T: Observable {
     private let object: T
     private let keyPath: KeyPath<T, V>
     private var values = [V]()
     
-    init(object: T, keyPath: KeyPath<T, V>)  {
+    public init(object: T, keyPath: KeyPath<T, V>)  {
         self.object = object
         self.keyPath = keyPath
         observe()
@@ -43,7 +43,7 @@ final class KeyPathObservationTracker<T, V> where T: AnyObject, T: Observable {
     }
     
     /// Gets all changed values since init or since last `getValues` call.
-    func getValues() -> [V] {
+    public func getValues() -> [V] {
         guard !values.isEmpty else { return values }
         var values = self.values
         self.values.removeAll()

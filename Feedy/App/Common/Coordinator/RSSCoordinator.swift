@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 // Choose between PresentationMVI or PresentationMVVM.
-import PresentationMVVM
+import PresentationMVI
 import CommonUI
 
 @MainActor struct RSSCoordinator {

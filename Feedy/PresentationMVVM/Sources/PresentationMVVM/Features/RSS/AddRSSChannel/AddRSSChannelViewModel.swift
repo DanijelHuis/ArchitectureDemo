@@ -7,6 +7,7 @@
 
 import Foundation
 import Domain
+import CommonUI
 
 @Observable @MainActor public final class AddRSSChannelViewModel {
     // Dependencies

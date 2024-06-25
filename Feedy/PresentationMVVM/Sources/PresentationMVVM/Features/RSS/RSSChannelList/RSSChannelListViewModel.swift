@@ -17,8 +17,6 @@ import CommonUI
     private let removeRSSHistoryItemUseCase: RemoveRSSHistoryItemUseCase
     private let coordinator: Coordinator
     let effectManager: EffectManager
-    // Private
-    private var cancellables: Set<AnyCancellable> = []
     
     public init(getRSSChannelsUseCase: GetRSSChannelsUseCase, removeRSSHistoryItemUseCase: RemoveRSSHistoryItemUseCase, effectManager: EffectManager, coordinator: Coordinator) {
         self.getRSSChannelsUseCase = getRSSChannelsUseCase

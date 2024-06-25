@@ -8,6 +8,7 @@
 import XCTest
 import Combine
 import TestUtility
+import CommonUI
 @testable import Domain
 @testable import PresentationMVVM
  
@@ -19,7 +20,6 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     private var coordinator: MockCoordinator!
     private var sut: RSSChannelDetailsViewModel!
     private var observationTracker: KeyPathObservationTracker<RSSChannelDetailsViewModel, RSSChannelDetailsViewModel.ViewStatus>!
-    private var cancellables: Set<AnyCancellable> = []
     private var didFinish = false
     
     // This is need to test async code.
@@ -115,6 +115,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     // MARK: - observeEnvironment -
     
     @MainActor func test_observeEnvironment_givenMatchingHistoryItem_thenUpdatesStates() async throws {
+        // Given
         var historyItem1 = Mock.historyItem1
         historyItem1.isFavourite = false
         // When
@@ -125,10 +126,11 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     }
     
     @MainActor func test_environment_givenNoMatchingHistoryItem_thenDoesNothing() async throws {
-        var historyItem1 = Mock.historyItem2
-        historyItem1.isFavourite = false
+        // Given
+        var historyItem2 = Mock.historyItem2
+        historyItem2.isFavourite = false
         // When
-        getRSSChannelsUseCase.subject.send([.init(historyItem: Mock.historyItem2, channel: .success(Mock.channel2))])
+        getRSSChannelsUseCase.subject.send([.init(historyItem: historyItem2, channel: .success(Mock.channel2))])
         await yieldTasks()
         // Then: does nothing
         XCTAssertEqual(sut.isFavourite, true) // Original item is true, this means it didn't changed it.
