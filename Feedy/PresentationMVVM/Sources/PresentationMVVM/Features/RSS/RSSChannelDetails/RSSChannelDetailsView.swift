@@ -10,7 +10,7 @@ import SwiftUI
 import CommonUI
 
 @MainActor public struct RSSChannelDetailsView: View {
-    @State private var viewModel: RSSChannelDetailsViewModel
+    @Bindable private var viewModel: RSSChannelDetailsViewModel // Using new @Bindable for iOS 17 @Observable
     
     public init(viewModel: RSSChannelDetailsViewModel) {
         self.viewModel =  viewModel

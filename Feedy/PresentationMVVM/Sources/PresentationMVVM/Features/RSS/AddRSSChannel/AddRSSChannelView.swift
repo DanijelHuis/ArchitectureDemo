@@ -9,7 +9,7 @@ import SwiftUI
 import CommonUI
 
 @MainActor public struct AddRSSChannelView: View {
-    @State private var viewModel: AddRSSChannelViewModel
+    @Bindable private var viewModel: AddRSSChannelViewModel // Using new @Bindable for iOS 17 @Observable
     @FocusState private var isURLTextFieldFocused: Bool
     
     public init(viewModel: AddRSSChannelViewModel) {

@@ -29,20 +29,25 @@ import CommonUI
     }
     
     private func observeEnvironment() {
-        getRSSChannelsUseCase.output.sink { [weak self] channels in
-            guard let self else { return }
-            self.channels = channels
-        }.store(in: &cancellables)
+        effectManager.runStream { [weak self, getRSSChannelsUseCase = getRSSChannelsUseCase] in
+            // Using .values instead of .sink so we can keep everything protected by MainActor and test easily.
+            for await channels in getRSSChannelsUseCase.output.values {
+                guard let self else { return }
+                self.channels = channels
+            }
+        }
     }
     
+    // MARK: - Actions -
+    
     func onFirstAppear() {
-        effectManager.run {
+        effectManager.runTask {
             await self.getChannels(showLoading: true)
         }
     }
     
     func didTapRetry() {
-        effectManager.run {
+        effectManager.runTask {
             await self.getChannels(showLoading: true)
         }
     }
@@ -56,7 +61,7 @@ import CommonUI
     }
     
     func didTapRemoveHistoryItem(historyItemID: UUID) {
-        effectManager.run {
+        effectManager.runTask {
             try? await self.removeRSSHistoryItemUseCase.removeRSSHistoryItem(historyItemID)
         }
     }
@@ -71,6 +76,9 @@ import CommonUI
         isShowingFavourites.toggle()
     }
     
+    
+    // MARK: - Other -
+    
     private func getChannels(showLoading: Bool) async {
         if showLoading { isLoading = true }
         defer { isLoading = false }
@@ -84,6 +92,7 @@ import CommonUI
     }
     
     // MARK: - View state -
+    
     let title = "rss_list_title".localized
     private var channels = [RSSChannelResponse]()
     private var didFail = false

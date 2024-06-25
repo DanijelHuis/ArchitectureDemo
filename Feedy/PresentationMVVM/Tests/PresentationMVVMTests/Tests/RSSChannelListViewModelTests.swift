@@ -20,6 +20,13 @@ final class RSSChannelListViewModelTests: XCTestCase {
     private var observationTracker: KeyPathObservationTracker<RSSChannelListViewModel, RSSChannelListViewModel.ViewStatus>!
     private var cancellables: Set<AnyCancellable> = []
     
+    // This is need to test async code.
+    override func invokeTest() {
+        withMainSerialExecutor {
+            super.invokeTest()
+        }
+    }
+    
     private struct Mock {
         static let uuid1 = UUID()
         static let uuid2 = UUID()
@@ -44,10 +51,10 @@ final class RSSChannelListViewModelTests: XCTestCase {
     }
     
     @MainActor override func setUp() async throws {
-        resetAll()
+        await resetAll()
     }
     
-    @MainActor private func resetAll() {
+    @MainActor private func resetAll() async {
         getRSSChannelsUseCase = .init()
         removeRSSHistoryItemUseCase = .init()
         coordinator = .init()
@@ -57,6 +64,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
                     effectManager: effectManager,
                     coordinator: coordinator)
         observationTracker = .init(object: sut, keyPath: \.status)
+        await yieldTasks()  // Waiting for Task in observeEnvironment
     }
     
     @MainActor override func tearDown() {
@@ -71,9 +79,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
     // This will set channels on the state (it invokes getRSSChannelsUseCase).
     @MainActor private func setupState(channels: [RSSChannelResponse]) async {
         getRSSChannelsUseCase.subject.send(channels)
-        
-        await effectManager.wait()
-        
+        await yieldTasks()  // Wait for async stream
         getRSSChannelsUseCase.getRSSChannelsCalls = 0
     }
     
@@ -82,7 +88,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
     @MainActor func test_observeEnvironment_givenEmits_thenUpdatesState() async throws {
         // When: use case emits
         getRSSChannelsUseCase.subject.send(Mock.channelsResponses)
-        await effectManager.wait()
+        await yieldTasks()
         // Then: reloads channels
         XCTAssertEqual(sut.status.cellTitles, ["channel1", "channel2"])
     }
@@ -94,7 +100,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         getRSSChannelsUseCase.channelsToEmit = Mock.channelsResponses
         // When
         sut.onFirstAppear()
-        await effectManager.wait()
+        await yieldTasks()
         // Then
         XCTAssertEqual(observationTracker.getValues().contains(.loading(text: "common_loading".localizedOrRandom)), true)
         XCTAssertEqual(sut.status.cellTitles, ["channel1", "channel2"])
@@ -105,7 +111,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         getRSSChannelsUseCase.channelsToEmit = Mock.channelsResponses
         // When
         sut.didTapRetry()
-        await effectManager.wait()
+        await yieldTasks()
         // Then
         XCTAssertEqual(observationTracker.getValues().contains(.loading(text: "common_loading".localizedOrRandom)), true)
         XCTAssertEqual(sut.status.cellTitles, ["channel1", "channel2"])
@@ -116,6 +122,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         getRSSChannelsUseCase.channelsToEmit = Mock.channelsResponses
         // When
         await sut.didInitiateRefresh()
+        await yieldTasks()
         // Then
         XCTAssertEqual(observationTracker.getValues().contains(.loading(text: "common_loading".localizedOrRandom)), false)
         XCTAssertEqual(sut.status.cellTitles, ["channel1", "channel2"])
@@ -124,7 +131,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
     @MainActor func test_didTapAddChannelButton_thenOpensAddScreen() async throws {
         // When
         sut.didTapAddChannelButton()
-        await effectManager.wait()
+        await yieldTasks()
         // Then
         XCTAssertEqual(coordinator.openRouteCalls.count, 1)
         XCTAssertEqual(coordinator.openRouteCalls.first, .rss(.add))
@@ -135,7 +142,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         await setupState(channels: Mock.channelsResponses)
         // When
         sut.didTapRemoveHistoryItem(historyItemID: Mock.uuid2)
-        await effectManager.wait()
+        await yieldTasks()
         // Then
         XCTAssertEqual(removeRSSHistoryItemUseCase.removeRSSHistoryItemCalls.count, 1)
         XCTAssertEqual(removeRSSHistoryItemUseCase.removeRSSHistoryItemCalls.first, Mock.uuid2)
@@ -147,7 +154,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         removeRSSHistoryItemUseCase.removeRSSHistoryItemError = MockError.generalError("removeRSSHistoryItemError")
         // When
         sut.didTapRemoveHistoryItem(historyItemID: Mock.uuid2)
-        await effectManager.wait()
+        await yieldTasks()
         // Then
         XCTAssertEqual(removeRSSHistoryItemUseCase.removeRSSHistoryItemCalls.count, 1)
         XCTAssertEqual(removeRSSHistoryItemUseCase.removeRSSHistoryItemCalls.first, Mock.uuid2)
@@ -160,7 +167,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         await setupState(channels: Mock.channelsResponses)
         // When
         sut.didSelectItem(historyItemID: Mock.uuid1)
-        await effectManager.wait()
+        await yieldTasks()
         // Then
         XCTAssertEqual(coordinator.openRouteCalls.count, 1)
         XCTAssertEqual(coordinator.openRouteCalls.first, .rss(.details(rssHistoryItem: Mock.historyItem1, channel: Mock.channel1)))
@@ -171,7 +178,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         await setupState(channels: [RSSChannelResponse(historyItem: Mock.historyItem2, channel: .success(Mock.channel2))])
         // When
         sut.didSelectItem(historyItemID: Mock.uuid1)
-        await effectManager.wait()
+        await yieldTasks()
         // Then
         XCTAssertEqual(coordinator.openRouteCalls.count, 0)
     }
@@ -181,7 +188,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         await setupState(channels: [RSSChannelResponse(historyItem: Mock.historyItem1, channel: .failure(.failedToLoad))])
         // When
         sut.didSelectItem(historyItemID: Mock.uuid1)
-        await effectManager.wait()
+        await yieldTasks()
         // Then
         XCTAssertEqual(coordinator.openRouteCalls.count, 0)
     }
@@ -191,7 +198,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
         await setupState(channels: Mock.channelsResponses)
         // When
         sut.toggleFavourites()
-        await effectManager.wait()
+        await yieldTasks()
         // Then: toggles favourites, filters and refreshes list
         XCTAssertEqual(sut.isShowingFavourites, true)
         switch sut.status {
@@ -264,7 +271,7 @@ final class RSSChannelListViewModelTests: XCTestCase {
     @MainActor func test_state_givenIsFavouriteTrue_givenNoCellStates_thenSetsEmptyScreen() async throws {
         // Given
         sut.toggleFavourites()
-        await effectManager.wait()
+        await yieldTasks()
         // When
         // historyItem2 is not favourite
         await setupState(channels: [.init(historyItem: Mock.historyItem2, channel: .success(Mock.channel2))])

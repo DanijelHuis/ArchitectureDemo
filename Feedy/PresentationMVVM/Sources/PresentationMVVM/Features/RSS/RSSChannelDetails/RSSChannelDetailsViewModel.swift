@@ -27,23 +27,25 @@ import CommonUI
         self.coordinator = coordinator
         self.rssHistoryItem = rssHistoryItem
         self.rssChannel = rssChannel
-        
         observeEnvironment()
     }
     
     private func observeEnvironment() {
         // Observing for changes in favourite state
-        getRSSChannelsUseCase.output.sink { [weak self] channels in
-            guard let self else { return }
-            guard let channelResponse = channels.first(where: { $0.historyItem.id == self.rssHistoryItem.id }) else { return }
-            self.rssHistoryItem = channelResponse.historyItem
-        }.store(in: &cancellables)
+        effectManager.runStream { [weak self, getRSSChannelsUseCase = getRSSChannelsUseCase] in
+            // Using .values instead of .sink so we can keep everything protected by MainActor and test easily.
+            for await channels in getRSSChannelsUseCase.output.values {
+                guard let self else { return }
+                guard let channelResponse = channels.first(where: { $0.historyItem.id == self.rssHistoryItem.id }) else { return }
+                self.rssHistoryItem = channelResponse.historyItem
+            }
+        }
     }
     
     // MARK: - Actions -
     
     func onFirstAppear() {
-        effectManager.run {
+        effectManager.runTask {
             await self.loadRSSChannel(showLoading: true)
         }
     }
@@ -53,7 +55,7 @@ import CommonUI
     }
     
     func toggleFavourites() {
-        self.effectManager.run {
+        self.effectManager.runTask {
             let isFavourite = !self.rssHistoryItem.isFavourite
             try? await self.changeHistoryItemFavouriteStatusUseCase.changeFavouriteStatus(historyItemID: self.rssHistoryItem.id, isFavourite: isFavourite)
         }

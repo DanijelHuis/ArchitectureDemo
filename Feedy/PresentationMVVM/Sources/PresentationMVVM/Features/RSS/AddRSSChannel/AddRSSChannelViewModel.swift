@@ -31,7 +31,7 @@ import Domain
             return
         }
         
-        effectManager.run {
+        effectManager.runTask {
             self.status = .validating
             
             // Check if we can fetch and decode RSS channel.

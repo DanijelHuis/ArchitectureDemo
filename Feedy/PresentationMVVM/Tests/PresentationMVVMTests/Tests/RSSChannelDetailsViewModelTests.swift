@@ -19,9 +19,15 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     private var coordinator: MockCoordinator!
     private var sut: RSSChannelDetailsViewModel!
     private var observationTracker: KeyPathObservationTracker<RSSChannelDetailsViewModel, RSSChannelDetailsViewModel.ViewStatus>!
-
     private var cancellables: Set<AnyCancellable> = []
     private var didFinish = false
+    
+    // This is need to test async code.
+    override func invokeTest() {
+        withMainSerialExecutor {
+            super.invokeTest()
+        }
+    }
     
     private struct Mock {
         static let link = URL(string: "link1")!
@@ -61,13 +67,13 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
         static let channels: [UUID: Result<RSSChannel, Error>] = [uuid1: .success(channel1), uuid2: .success(channel2)]
     }
     
-    @MainActor override func setUp() {
+    @MainActor override func setUp() async throws {
         Container.locale = Locale(identifier: "en")
         Container.timeZone = TimeZone(secondsFromGMT: 0)!
-        resetAll()
+        await resetAll()
     }
     
-    @MainActor private func resetAll() {
+    @MainActor private func resetAll() async {
         getRSSChannelsUseCase = .init()
         getRSSChannelUseCase = .init()
         changeHistoryItemFavouriteStatusUseCase = .init()
@@ -75,6 +81,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
         coordinator = .init()
         sut = createSUT(historyItem: Mock.historyItem1, channel: Mock.channel1)
         observationTracker = .init(object: sut, keyPath: \.status)
+        await yieldTasks()  // Waiting for Task in observeEnvironment
     }
     
     @MainActor override func tearDown() {
@@ -112,7 +119,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
         historyItem1.isFavourite = false
         // When
         getRSSChannelsUseCase.subject.send([.init(historyItem: historyItem1, channel: .success(Mock.channel1))])
-        await effectManager.wait()
+        await yieldTasks()
         // Then
         XCTAssertEqual(sut.isFavourite, false)  // Original item is true, this means it changed it.
     }
@@ -122,7 +129,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
         historyItem1.isFavourite = false
         // When
         getRSSChannelsUseCase.subject.send([.init(historyItem: Mock.historyItem2, channel: .success(Mock.channel2))])
-        await effectManager.wait()
+        await yieldTasks()
         // Then: does nothing
         XCTAssertEqual(sut.isFavourite, true) // Original item is true, this means it didn't changed it.
     }
@@ -135,7 +142,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
         getRSSChannelUseCase.getRSSChannelResult = .success(Mock.updatedChannel1)
         // When
         sut.onFirstAppear()
-        await effectManager.wait()
+        await yieldTasks()
         // Then: sets loading
         XCTAssertEqual(observationTracker.getValues().contains(.loading(text: "common_loading".localizedOrRandom)), true)
         // Then: checking that it loaded new channel and set it up, other stuff is tested elsewhere
@@ -156,7 +163,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     @MainActor func test_toggleFavourites_thenTogglesFavourites() async throws {
         // When
         sut.toggleFavourites()
-        await effectManager.wait()
+        await yieldTasks()
         // Then
         XCTAssertEqual(changeHistoryItemFavouriteStatusUseCase.changeFavouriteStatusCalls.count, 1)
         XCTAssertEqual(changeHistoryItemFavouriteStatusUseCase.changeFavouriteStatusCalls.first?.historyItemID, Mock.uuid1)
@@ -166,7 +173,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     @MainActor func test_didTapOnRSSItem_thenCallsCoordinator() async throws {
         // When
         sut.didTapOnRSSItem(link: Mock.link)
-        await effectManager.wait()
+        await yieldTasks()
         // Then
         XCTAssertEqual(coordinator.openRouteCalls, [.common(.safari(url: Mock.link))])
     }
@@ -174,7 +181,7 @@ final class RSSChannelDetailsViewModelTests: XCTestCase {
     @MainActor func test_didTapOnRSSItem_givenNilLink_thenDoesntCallCoordinator() async throws {
         // When
         sut.didTapOnRSSItem(link: nil)
-        await effectManager.wait()
+        await yieldTasks()
         // Then
         XCTAssertEqual(coordinator.openRouteCalls.count, 0)
     }
